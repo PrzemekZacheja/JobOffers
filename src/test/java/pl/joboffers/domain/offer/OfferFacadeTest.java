@@ -1,4 +1,4 @@
-package pl.joboffers.domain.offers;
+package pl.joboffers.domain.offer;
 
 import org.junit.jupiter.api.Test;
 
