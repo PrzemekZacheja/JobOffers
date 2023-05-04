@@ -31,10 +31,25 @@ class OfferFacadeTest {
     @Test
     void should_return_object_from_hash() {
         //given
-
+        String link = "www.jobsforjuniors1.com";
         //when
         List<OfferResponseObjectDto> allOffers = offerFacade.getAllOffers();
         //then
-        assertThat(allOffers.get(0)).isEqualTo(repositoryForTest.);
+        OfferResponseObject byLinkAsId = repositoryForTest.findByLinkAsId(link);
+        assertThat(allOffers.get(0)).isEqualTo(OfferResponseMapper.mapToOfferResponseDto(byLinkAsId));
+    }
+
+    @Test
+    void should_return_correct_object_added_manualy() {
+        //given
+        String link = "www.jobsforjuniors1.com";
+        String nameOfPosition = "Junior1";
+        String nameOfCompany = "CBD1";
+        double salary = 3500.00;
+        //when
+        OfferResponseObjectDto offerSavedManually = offerFacade.addManualJobOffer(link, nameOfPosition, nameOfCompany, salary);
+        OfferResponseObject byLinkAsId = repositoryForTest.findByLinkAsId("www.jobsforjuniors1.com");
+        //then
+        assertThat(offerSavedManually).isEqualTo(OfferResponseMapper.mapToOfferResponseDto(byLinkAsId));
     }
 }

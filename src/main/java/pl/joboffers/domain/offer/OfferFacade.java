@@ -16,4 +16,15 @@ public class OfferFacade {
         allOffers.forEach(offer -> repository.save(OfferResponseMapper.mapToOfferResponse(offer)));
         return allOffers;
     }
+
+    public OfferResponseObjectDto addManualJobOffer(String linkToOffer, String nameOfPosition, String nameOfCompany, double salary) {
+        OfferResponseObject offerResponseObject = OfferResponseObject.builder()
+                .linkToOffer(linkToOffer)
+                .nameOfPosition(nameOfPosition)
+                .nameOfCompany(nameOfCompany)
+                .salary(salary)
+                .build();
+        repository.save(offerResponseObject);
+        return OfferResponseMapper.mapToOfferResponseDto(offerResponseObject);
+    }
 }

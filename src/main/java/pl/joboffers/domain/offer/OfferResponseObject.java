@@ -3,7 +3,5 @@ package pl.joboffers.domain.offer;
 import lombok.Builder;
 
 @Builder
-record OfferResponseObject(String nameOfJob, double salary, String description) {
+record OfferResponseObject(String linkToOffer, String nameOfPosition, String nameOfCompany, double salary) {
 }
-
-//TODO add id as long to OfferResponseObject and OfferResponseObjectDto
