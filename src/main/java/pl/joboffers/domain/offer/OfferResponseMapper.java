@@ -6,6 +6,7 @@ public class OfferResponseMapper {
 
     public static OfferResponseObject mapToOfferResponse(OfferResponseObjectDto offer) {
         return OfferResponseObject.builder()
+                .id(offer.id())
                 .linkToOffer(offer.linkToOffer())
                 .nameOfCompany(offer.nameOfCompany())
                 .nameOfPosition(offer.nameOfPosition())
@@ -15,6 +16,7 @@ public class OfferResponseMapper {
 
     public static OfferResponseObjectDto mapToOfferResponseDto(OfferResponseObject offer) {
         return OfferResponseObjectDto.builder()
+                .id(offer.id())
                 .linkToOffer(offer.linkToOffer())
                 .nameOfCompany(offer.nameOfCompany())
                 .nameOfPosition(offer.nameOfPosition())

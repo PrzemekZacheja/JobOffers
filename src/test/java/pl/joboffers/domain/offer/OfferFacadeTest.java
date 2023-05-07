@@ -12,7 +12,8 @@ class OfferFacadeTest {
     OfferFacadeRepository repositoryForTest = new OfferFacadeRepositoryForTest();
     OfferFacade offerFacade = new OfferFacade(
             new OfferResponseClientImpl(),
-            repositoryForTest);
+            repositoryForTest,
+            new HashGenerator());
 
     @Test
     void should_return_dto_object() {

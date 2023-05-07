@@ -10,6 +10,7 @@ public class OfferFacade {
 
     OfferResponseClient client;
     OfferFacadeRepository repository;
+    private HashGenerator hashGenerator;
 
     public List<OfferResponseObjectDto> getAllOffers() {
         List<OfferResponseObjectDto> allOffers = client.getAllOffers();
@@ -19,6 +20,7 @@ public class OfferFacade {
 
     public OfferResponseObjectDto addManualJobOffer(String linkToOffer, String nameOfPosition, String nameOfCompany, double salary) {
         OfferResponseObject offerResponseObject = OfferResponseObject.builder()
+                .id(hashGenerator.getHash())
                 .linkToOffer(linkToOffer)
                 .nameOfPosition(nameOfPosition)
                 .nameOfCompany(nameOfCompany)
