@@ -9,7 +9,7 @@ public class LoginAndRegisterFacadeRepositoryForTest implements LoginAndRegister
 
     @Override
     public User save(User user) {
-        databaseInMemory.put(user.email(), user);
+        databaseInMemory.put(user.getEmail(), user);
         return user;
     }
 

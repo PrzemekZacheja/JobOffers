@@ -1,7 +1,18 @@
 package pl.joboffers.domain.login_and_register;
 
 import lombok.Builder;
+import lombok.Data;
 
 @Builder
-record User(String email, String password, String token, boolean isLogged) {
+@Data
+final class User {
+    private String email;
+    private String password;
+    private String token;
+    private boolean isLogged;
+
+    public void loggIn() {
+        isLogged = true;
+    }
+
 }

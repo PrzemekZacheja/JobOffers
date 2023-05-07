@@ -13,17 +13,37 @@ class LoginAndRegisterFacadeTest {
     @Test
     void should_save_user_to_database_if_not_exist() {
         //given
-        User userToSaveInDatabase = User.builder()
-                .email("example@gov.pl")
-                .token("exampleToken")
-                .isLogged(true)
-                .password("1234")
-                .build();
-        String emailToSearchInDatabase = "example@gov.pl";
+        String email = "example@gov.pl";
+        String password = "1234";
         //when
-        UserDto registeredUser = loginAndRegisterFacade.registerUserOrLogin();
+        UserDto registeredUser = loginAndRegisterFacade.registerUser(email, password);
         //then
-        User userFindByEmail = repository.findByEmail(emailToSearchInDatabase);
-        assertThat(registeredUser).isEqualTo(LogginAndRegisterMapper.mapToUserDto(userFindByEmail));
+        User userFindByEmail = repository.findByEmail(email);
+        assertThat(registeredUser).isEqualTo(MapperLoginAndRegister.mapToUserDto(userFindByEmail));
     }
+
+    @Test
+    void should_create_User_and_set_isLogged_to_false_when_user_not_exist_in_repository() {
+        //given
+        String email = "example@gov.pl";
+        String password = "1234";
+        //when
+        UserDto firstLogin = loginAndRegisterFacade.registerUser(email, password);
+        //then
+        assertThat(firstLogin.isLogged()).isFalse();
+    }
+
+
+    @Test
+    void should_change_isLogged_to_true_when_user_exist_in_repository() {
+        //given
+        String email = "example@gov.pl";
+        String password = "1234";
+        //when
+        UserDto firstLogin = loginAndRegisterFacade.registerUser(email, password);
+        UserDto secondLogin = loginAndRegisterFacade.registerUser(email, password);
+        //then
+        assertThat(secondLogin.isLogged()).isTrue();
+    }
+
 }
