@@ -2,7 +2,7 @@ package pl.joboffers.domain.offer;
 
 import pl.joboffers.domain.offer.dto.OfferResponseObjectDto;
 
-public class OfferResponseMapper {
+public class MapperOfferResponse {
 
     public static OfferResponseObject mapToOfferResponse(OfferResponseObjectDto offer) {
         return OfferResponseObject.builder()

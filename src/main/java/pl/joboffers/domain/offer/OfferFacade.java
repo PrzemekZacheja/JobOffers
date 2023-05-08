@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import pl.joboffers.domain.offer.dto.OfferResponseObjectDto;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 public class OfferFacade {
@@ -14,7 +15,7 @@ public class OfferFacade {
 
     public List<OfferResponseObjectDto> getAllOffers() {
         List<OfferResponseObjectDto> allOffers = client.getAllOffers();
-        allOffers.forEach(offer -> repository.save(OfferResponseMapper.mapToOfferResponse(offer)));
+        allOffers.forEach(offer -> repository.save(MapperOfferResponse.mapToOfferResponse(offer)));
         return allOffers;
     }
 
@@ -27,6 +28,12 @@ public class OfferFacade {
                 .salary(salary)
                 .build();
         repository.save(offerResponseObject);
-        return OfferResponseMapper.mapToOfferResponseDto(offerResponseObject);
+        return MapperOfferResponse.mapToOfferResponseDto(offerResponseObject);
     }
+
+    public List<OfferResponseObjectDto> getAllOffersFromRepository() {
+        List<OfferResponseObject> allOffersFromRepository = repository.getAllOffersFromRepository();
+        return allOffersFromRepository.stream().map(MapperOfferResponse::mapToOfferResponseDto).collect(Collectors.toList());
+    }
+
 }

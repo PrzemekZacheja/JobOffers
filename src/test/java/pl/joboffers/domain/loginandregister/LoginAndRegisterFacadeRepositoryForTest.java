@@ -1,4 +1,4 @@
-package pl.joboffers.domain.login_and_register;
+package pl.joboffers.domain.loginandregister;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

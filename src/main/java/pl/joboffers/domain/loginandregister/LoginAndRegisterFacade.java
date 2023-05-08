@@ -1,7 +1,7 @@
-package pl.joboffers.domain.login_and_register;
+package pl.joboffers.domain.loginandregister;
 
 import lombok.AllArgsConstructor;
-import pl.joboffers.domain.login_and_register.dto.UserDto;
+import pl.joboffers.domain.loginandregister.dto.UserDto;
 
 @AllArgsConstructor
 public class LoginAndRegisterFacade {

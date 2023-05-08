@@ -37,7 +37,7 @@ class OfferFacadeTest {
         List<OfferResponseObjectDto> allOffers = offerFacade.getAllOffers();
         //then
         OfferResponseObject byLinkAsId = repositoryForTest.findByLinkAsId(link);
-        assertThat(allOffers.get(0)).isEqualTo(OfferResponseMapper.mapToOfferResponseDto(byLinkAsId));
+        assertThat(allOffers.get(0)).isEqualTo(MapperOfferResponse.mapToOfferResponseDto(byLinkAsId));
     }
 
     @Test
@@ -51,6 +51,14 @@ class OfferFacadeTest {
         OfferResponseObjectDto offerSavedManually = offerFacade.addManualJobOffer(link, nameOfPosition, nameOfCompany, salary);
         OfferResponseObject byLinkAsId = repositoryForTest.findByLinkAsId("www.jobsforjuniors1.com");
         //then
-        assertThat(offerSavedManually).isEqualTo(OfferResponseMapper.mapToOfferResponseDto(byLinkAsId));
+        assertThat(offerSavedManually).isEqualTo(MapperOfferResponse.mapToOfferResponseDto(byLinkAsId));
+    }
+
+    @Test
+    void should_return_correct_offers_from_repository() {
+        //given
+        //when
+        //then
+        assertThat()
     }
 }
