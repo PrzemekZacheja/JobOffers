@@ -1,7 +1,7 @@
-package pl.joboffers.domain.login_and_register;
+package pl.joboffers.domain.loginandregister;
 
 import org.junit.jupiter.api.Test;
-import pl.joboffers.domain.login_and_register.dto.UserDto;
+import pl.joboffers.domain.loginandregister.dto.UserDto;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
