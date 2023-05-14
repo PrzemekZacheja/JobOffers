@@ -8,4 +8,6 @@ public interface OfferFacadeRepository {
     OfferResponseObject findByLinkAsId(String link);
 
     List<OfferResponseObject> getAllOffersFromRepository();
+
+    OfferResponseObject findOfferById(String id);
 }

@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import pl.joboffers.domain.offer.dto.OfferResponseObjectDto;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @AllArgsConstructor
 public class OfferFacade {
@@ -33,7 +32,11 @@ public class OfferFacade {
 
     public List<OfferResponseObjectDto> getAllOffersFromRepository() {
         List<OfferResponseObject> allOffersFromRepository = repository.getAllOffersFromRepository();
-        return allOffersFromRepository.stream().map(MapperOfferResponse::mapToOfferResponseDto).collect(Collectors.toList());
+        return allOffersFromRepository.stream().map(MapperOfferResponse::mapToOfferResponseDto).toList();
     }
 
+    public OfferResponseObjectDto findOneOfferById(String id) {
+        OfferResponseObject offerById = repository.findOfferById(id);
+        return MapperOfferResponse.mapToOfferResponseDto(offerById);
+    }
 }
