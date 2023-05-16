@@ -3,7 +3,10 @@ package pl.joboffers.domain.loginandregister;
 import org.junit.jupiter.api.Test;
 import pl.joboffers.domain.loginandregister.dto.UserDto;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 class LoginAndRegisterFacadeTest {
 
@@ -18,8 +21,8 @@ class LoginAndRegisterFacadeTest {
         //when
         UserDto registeredUser = loginAndRegisterFacade.registerUser(email, password);
         //then
-        User userFindByEmail = repository.findByEmail(email);
-        assertThat(registeredUser).isEqualTo(MapperLoginAndRegister.mapToUserDto(userFindByEmail));
+        Optional<User> repositoryByEmail = repository.findByEmail(email);
+        assertThat(registeredUser).isEqualTo(MapperLoginAndRegister.mapToUserDto(repositoryByEmail.get()));
     }
 
     @Test
@@ -46,4 +49,12 @@ class LoginAndRegisterFacadeTest {
         assertThat(secondLogin.isLogged()).isTrue();
     }
 
+    @Test
+    void should_throw_exception_when_user_is_not_found() {
+        //given
+        String email = "example@gov.pl";
+        //when
+        //then
+        assertThatThrownBy(() -> loginAndRegisterFacade.loginUser(email)).isInstanceOf(NoUserFoundInRepositoryException.class);
+    }
 }

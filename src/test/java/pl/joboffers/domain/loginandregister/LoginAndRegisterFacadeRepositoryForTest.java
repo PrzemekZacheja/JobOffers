@@ -1,6 +1,7 @@
 package pl.joboffers.domain.loginandregister;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class LoginAndRegisterFacadeRepositoryForTest implements LoginAndRegisterFacadeRepository {
@@ -14,7 +15,7 @@ public class LoginAndRegisterFacadeRepositoryForTest implements LoginAndRegister
     }
 
     @Override
-    public User findByEmail(String emailToSearchInDatabase) {
-        return databaseInMemory.get(emailToSearchInDatabase);
+    public Optional<User> findByEmail(String emailToSearchInDatabase) {
+        return Optional.ofNullable(databaseInMemory.get(emailToSearchInDatabase));
     }
 }
