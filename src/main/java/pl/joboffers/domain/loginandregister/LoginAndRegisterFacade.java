@@ -27,15 +27,13 @@ public class LoginAndRegisterFacade {
     }
 
     public UserDto loginUser(String email) {
-        if (!isSavedInRepository(email)) {
-            throw new NoUserFoundInRepositoryException("Not found " + email);
-        }
-        User foundInRepositoryUser = repository.findByEmail(email);
-        foundInRepositoryUser.loggIn();
-        return MapperLoginAndRegister.mapToUserDto(foundInRepositoryUser);
+        User user = repository.findByEmail(email)
+                .orElseThrow(() -> new NoUserFoundInRepositoryException(email));
+        user.loggIn();
+        return MapperLoginAndRegister.mapToUserDto(user);
     }
 
     private boolean isSavedInRepository(String email) {
-        return repository.findByEmail(email) != null;
+        return repository.findByEmail(email).isPresent();
     }
 }
