@@ -46,7 +46,7 @@ class OfferFacadeTest {
         String link = "www.jobsforjuniors1.com";
         String nameOfPosition = "Junior1";
         String nameOfCompany = "CBD1";
-        double salary = 3500.00;
+        String salary = "3500.00";
         //when
         OfferResponseObjectDto offerSavedManually = offerFacade.addManualJobOffer(link, nameOfPosition, nameOfCompany, salary);
         OfferResponseObject byLinkAsId = repositoryForTest.findByLinkAsId("www.jobsforjuniors1.com");
@@ -57,8 +57,8 @@ class OfferFacadeTest {
     @Test
     void should_return_one_object_when_try_save_duplicates_by_link_of_offer() {
         //given
-        OfferResponseObjectDto offerResponseObjectDto1 = new OfferResponseObjectDto("1", "www.jobsforjuniors1.com", "Junior1", "CBD1", 3500.00);
-        OfferResponseObjectDto offerResponseObjectDto2 = new OfferResponseObjectDto("2", "www.jobsforjuniors1.com", "Junior2", "CBD2", 3500.00);
+        OfferResponseObjectDto offerResponseObjectDto1 = new OfferResponseObjectDto("1", "www.jobsforjuniors1.com", "Junior1", "CBD1", "3500.00");
+        OfferResponseObjectDto offerResponseObjectDto2 = new OfferResponseObjectDto("2", "www.jobsforjuniors1.com", "Junior2", "CBD2", "3500.00");
         //when
         repositoryForTest.save(MapperOfferResponse.mapToOfferResponse(offerResponseObjectDto1));
         repositoryForTest.save(MapperOfferResponse.mapToOfferResponse(offerResponseObjectDto2));
@@ -71,7 +71,7 @@ class OfferFacadeTest {
     void should_return_correct_object_find_by_id() {
         //given
         String id = "3";
-        OfferResponseObjectDto expected = new OfferResponseObjectDto("3", "www.jobsforjuniors3.com", "Junior3", "CBD3", 5500.00);
+        OfferResponseObjectDto expected = new OfferResponseObjectDto("3", "www.jobsforjuniors3.com", "Junior3", "CBD3", "5500.00");
         List<OfferResponseObjectDto> allOffers = offerFacade.getAllOffers();
         //when
         OfferResponseObjectDto oneOfferById = offerFacade.findOneOfferById(id);

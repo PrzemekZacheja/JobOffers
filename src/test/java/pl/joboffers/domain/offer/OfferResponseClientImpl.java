@@ -8,9 +8,9 @@ public class OfferResponseClientImpl implements OfferResponseClient {
     @Override
     public List<OfferResponseObjectDto> getAllOffers() {
         return List.of(
-                new OfferResponseObjectDto("1", "www.jobsforjuniors1.com", "Junior1", "CBD1", 3500.00),
-                new OfferResponseObjectDto("2", "www.jobsforjuniors2.com", "Junior2", "CBD2", 4500.00),
-                new OfferResponseObjectDto("3", "www.jobsforjuniors3.com", "Junior3", "CBD3", 5500.00)
+                new OfferResponseObjectDto("1", "www.jobsforjuniors1.com", "Junior1", "CBD1", "3500.00"),
+                new OfferResponseObjectDto("2", "www.jobsforjuniors2.com", "Junior2", "CBD2", "4500.00"),
+                new OfferResponseObjectDto("3", "www.jobsforjuniors3.com", "Junior3", "CBD3", "5500.00")
         );
     }
 }

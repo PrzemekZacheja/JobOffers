@@ -18,7 +18,7 @@ public class OfferFacade {
         return allOffers;
     }
 
-    public OfferResponseObjectDto addManualJobOffer(String linkToOffer, String nameOfPosition, String nameOfCompany, double salary) {
+    public OfferResponseObjectDto addManualJobOffer(String linkToOffer, String nameOfPosition, String nameOfCompany, String salary) {
         OfferResponseObject offerResponseObject = OfferResponseObject.builder()
                 .id(hashGenerator.getHash())
                 .linkToOffer(linkToOffer)
