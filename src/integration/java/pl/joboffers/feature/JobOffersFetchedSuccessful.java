@@ -12,7 +12,7 @@ import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-class JobOffersFetchedSuccessful extends BaseIntegrationTest {
+class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJobOffersResponse {
 
     @Autowired
     OfferResponseClient offerResponseClient;
@@ -26,7 +26,7 @@ class JobOffersFetchedSuccessful extends BaseIntegrationTest {
                 .willReturn(WireMock.aResponse()
                         .withStatus(HttpStatus.OK.value())
                         .withHeader("Content-Type", "application/json")
-                        .withBody("[]")
+                        .withBody(bodyWithZeroOffersJson())
                 ));
         //when
         List<OfferResponseObjectDto> allOffers = offerResponseClient.getAllOffers();
