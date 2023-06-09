@@ -24,6 +24,7 @@
         <testcontainers.version>1.17.4</testcontainers.version>
         <mockito-core.version>4.9.0</mockito-core.version>
         <wiremock-jre8.version>2.35.0</wiremock-jre8.version>
+        <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
 
     </properties>
 
@@ -42,6 +43,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-mongodb</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+
         <!--          TEST CONTAINERS -->
         <dependency>
             <groupId>org.testcontainers</groupId>
@@ -93,6 +100,12 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
+            </plugin>
+
         </plugins>
     </build>
 
