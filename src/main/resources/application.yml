@@ -5,6 +5,7 @@ spring:
 
 joboffers:
   offer:
+    durationOfResponse: "* * */3 * * *"
     http:
       client:
         config:

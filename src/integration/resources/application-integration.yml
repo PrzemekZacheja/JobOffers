@@ -1,0 +1,3 @@
+joboffers:
+  offer:
+    durationOfResponse: "*/10 * * * * *"
