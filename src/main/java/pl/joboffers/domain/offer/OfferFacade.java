@@ -8,9 +8,9 @@ import java.util.List;
 @AllArgsConstructor
 public class OfferFacade {
 
-    OfferResponseClient client;
-    OfferFacadeRepository repository;
-    private HashGenerator hashGenerator;
+    private final OfferResponseClient client;
+    private final OfferFacadeRepository repository;
+    private final HashGenerator hashGenerator;
 
     public List<OfferResponseObjectDto> getAllOffers() {
         List<OfferResponseObjectDto> allOffers = client.getAllOffers();
@@ -18,21 +18,26 @@ public class OfferFacade {
         return allOffers;
     }
 
-    public OfferResponseObjectDto addManualJobOffer(String linkToOffer, String nameOfPosition, String nameOfCompany, String salary) {
+    public OfferResponseObjectDto addManualJobOffer(String linkToOffer,
+                                                    String nameOfPosition,
+                                                    String nameOfCompany,
+                                                    String salary) {
         OfferResponseObject offerResponseObject = OfferResponseObject.builder()
-                .id(hashGenerator.getHash())
-                .linkToOffer(linkToOffer)
-                .nameOfPosition(nameOfPosition)
-                .nameOfCompany(nameOfCompany)
-                .salary(salary)
-                .build();
+                                                                     .id(hashGenerator.getHash())
+                                                                     .linkToOffer(linkToOffer)
+                                                                     .nameOfPosition(nameOfPosition)
+                                                                     .nameOfCompany(nameOfCompany)
+                                                                     .salary(salary)
+                                                                     .build();
         repository.save(offerResponseObject);
         return MapperOfferResponse.mapToOfferResponseDto(offerResponseObject);
     }
 
     public List<OfferResponseObjectDto> getAllOffersFromRepository() {
         List<OfferResponseObject> allOffersFromRepository = repository.getAllOffersFromRepository();
-        return allOffersFromRepository.stream().map(MapperOfferResponse::mapToOfferResponseDto).toList();
+        return allOffersFromRepository.stream()
+                                      .map(MapperOfferResponse::mapToOfferResponseDto)
+                                      .toList();
     }
 
     public OfferResponseObjectDto findOneOfferById(String id) {

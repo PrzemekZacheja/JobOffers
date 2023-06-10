@@ -5,6 +5,7 @@ spring:
 
 joboffers:
   offer:
+    durationOfResponse: "* * */3 * * *"
     http:
       client:
         config:
@@ -12,3 +13,6 @@ joboffers:
           port: 5057
           connectionTimeout: 1000
           readTimeout: 1000
+
+scheduling:
+  enabled: true

@@ -5,8 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import pl.joboffers.BaseIntegrationTest;
-import pl.joboffers.domain.offer.OfferResponseClient;
+import pl.joboffers.domain.offer.OfferFacade;
 import pl.joboffers.domain.offer.dto.OfferResponseObjectDto;
+import pl.joboffers.infrastracture.offer.scheduler.OfferScheduler;
 
 import java.util.List;
 
@@ -15,7 +16,10 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJobOffersResponse {
 
     @Autowired
-    OfferResponseClient offerResponseClient;
+    OfferFacade offerFacade;
+
+    @Autowired
+    OfferScheduler scheduler;
 
     @Test
     void should_fetch_all_job_offers_for_junior_save_to_repository_and_show_to_user() {
@@ -23,18 +27,20 @@ class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJo
 //    step 1: there are no offers in external HTTP server (http://ec2-3-120-147-150.eu-central-1.compute.amazonaws.com:5057/offers)
         //given
         wireMockServer.stubFor(WireMock.get("/offers")
-                .willReturn(WireMock.aResponse()
-                        .withStatus(HttpStatus.OK.value())
-                        .withHeader("Content-Type", "application/json")
-                        .withBody(bodyWithZeroOffersJson())
-                ));
+                                       .willReturn(WireMock.aResponse()
+                                                           .withStatus(HttpStatus.OK.value())
+                                                           .withHeader("Content-Type", "application/json")
+                                                           .withBody(bodyWithZeroOffersJson())));
         //when
-        List<OfferResponseObjectDto> allOffers = offerResponseClient.getAllOffers();
+        List<OfferResponseObjectDto> allOffers = offerFacade.getAllOffers();
         //then
         assertThat(allOffers.size()).isEqualTo(0);
 
 
 //    step 2: scheduler ran 1st time and made GET to external server and system added 0 offers to database
+        scheduler.scheduleGetAllOffers();
+
+
 //    step 3: user tried to get JWT token by requesting POST /token with username=someUser, password=somePassword and system returned UNAUTHORIZED(401)
 //    step 4: user made GET /offers with no jwt token and system returned UNAUTHORIZED(401)
 //    step 5: user made POST /register with username=someUser, password=somePassword and system registered user with status OK(200)
