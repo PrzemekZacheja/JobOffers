@@ -1,3 +1,6 @@
 joboffers:
   offer:
-    durationOfResponse: "*/10 * * * * *"
+    durationOfResponse: "*/1 * * * * *"
+
+scheduling:
+  enabled: false

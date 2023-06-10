@@ -9,11 +9,9 @@ import pl.joboffers.domain.offer.OfferFacade;
 import pl.joboffers.domain.offer.dto.OfferResponseObjectDto;
 import pl.joboffers.infrastracture.offer.scheduler.OfferScheduler;
 
-import java.time.Duration;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.awaitility.Awaitility.await;
 
 class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJobOffersResponse {
 
@@ -40,14 +38,9 @@ class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJo
 
 
 //    step 2: scheduler ran 1st time and made GET to external server and system added 0 offers to database
-        //given
-        //when
-        scheduler.schedule();
-        //then
-        await().atMost(Duration.ofSeconds(20))
-               .pollInterval(Duration.ofSeconds(1))
-               .until(() -> offerFacade.getAllOffersFromRepository()
-                                       .isEmpty());
+        scheduler.scheduleGetAllOffers();
+
+
 //    step 3: user tried to get JWT token by requesting POST /token with username=someUser, password=somePassword and system returned UNAUTHORIZED(401)
 //    step 4: user made GET /offers with no jwt token and system returned UNAUTHORIZED(401)
 //    step 5: user made POST /register with username=someUser, password=somePassword and system registered user with status OK(200)

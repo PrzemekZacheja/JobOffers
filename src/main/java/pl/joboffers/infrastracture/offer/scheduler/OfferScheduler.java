@@ -17,9 +17,10 @@ public class OfferScheduler {
     private final OfferFacade offerFacade;
 
     @Scheduled(cron = "${joboffers.offer.durationOfResponse}")
-    public void schedule() {
+    public List<OfferResponseObjectDto> scheduleGetAllOffers() {
         log.info("Scheduling");
         List<OfferResponseObjectDto> allOffers = offerFacade.getAllOffers();
         log.info(allOffers.size());
+        return allOffers;
     }
 }
