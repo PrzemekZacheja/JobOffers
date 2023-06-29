@@ -14,8 +14,11 @@ public class OfferFacade {
 
     public List<OfferResponseObjectDto> getAllOffers() {
         List<OfferResponseObjectDto> allOffers = client.getAllOffers();
-        allOffers.forEach(offer -> repository.save(MapperOfferResponse.mapToOfferResponse(offer)));
-        return allOffers;
+        return allOffers.stream()
+                .map(MapperOfferResponse::mapToOfferResponse)
+                .map(repository::save)
+                .map(MapperOfferResponse::mapToOfferResponseDto)
+                .toList();
     }
 
     public OfferResponseObjectDto addManualJobOffer(String linkToOffer,
@@ -34,14 +37,16 @@ public class OfferFacade {
     }
 
     public List<OfferResponseObjectDto> getAllOffersFromRepository() {
-        List<OfferResponseObject> allOffersFromRepository = repository.getAllOffersFromRepository();
+        List<OfferResponseObject> allOffersFromRepository = repository.findAll();
         return allOffersFromRepository.stream()
-                                      .map(MapperOfferResponse::mapToOfferResponseDto)
-                                      .toList();
+                .map(MapperOfferResponse::mapToOfferResponseDto)
+                .toList();
     }
 
-    public OfferResponseObjectDto findOneOfferById(String id) {
-        OfferResponseObject offerById = repository.findOfferById(id);
+    public OfferResponseObjectDto findOfferByLinkToOffer(String linkToOffer) {
+        OfferResponseObject offerById =
+                repository.findOfferByLinkToOffer(linkToOffer)
+                        .orElseThrow(() -> new NoOfferInDBException("No offer"));
         return MapperOfferResponse.mapToOfferResponseDto(offerById);
     }
 }

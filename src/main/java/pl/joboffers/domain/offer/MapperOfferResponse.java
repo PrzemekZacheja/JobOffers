@@ -7,9 +7,9 @@ public class MapperOfferResponse {
     public static OfferResponseObject mapToOfferResponse(OfferResponseObjectDto offer) {
         return OfferResponseObject.builder()
                 .id(offer.id())
-                .linkToOffer(offer.linkToOffer())
-                .nameOfCompany(offer.nameOfCompany())
-                .nameOfPosition(offer.nameOfPosition())
+                .linkToOffer(offer.offerUrl())
+                .nameOfCompany(offer.company())
+                .nameOfPosition(offer.title())
                 .salary(offer.salary())
                 .build();
     }
@@ -17,9 +17,9 @@ public class MapperOfferResponse {
     public static OfferResponseObjectDto mapToOfferResponseDto(OfferResponseObject offer) {
         return OfferResponseObjectDto.builder()
                 .id(offer.id())
-                .linkToOffer(offer.linkToOffer())
-                .nameOfCompany(offer.nameOfCompany())
-                .nameOfPosition(offer.nameOfPosition())
+                .offerUrl(offer.linkToOffer())
+                .company(offer.nameOfCompany())
+                .title(offer.nameOfPosition())
                 .salary(offer.salary())
                 .build();
     }

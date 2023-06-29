@@ -11,13 +11,14 @@ class OfferFacadeTest {
 
     OfferFacadeRepository repositoryForTest = new OfferFacadeRepositoryForTest();
     OfferFacade offerFacade = new OfferFacade(
-            new OfferResponseClientImpl(),
+            new OfferResponseClientImpl(repositoryForTest),
             repositoryForTest,
             new HashGenerator());
 
     @Test
     void should_return_dto_object() {
-        assertThat(offerFacade.getAllOffers().get(0)).isInstanceOf(OfferResponseObjectDto.class);
+        assertThat(offerFacade.getAllOffers()
+                .get(0)).isInstanceOf(OfferResponseObjectDto.class);
     }
 
     @Test
@@ -36,7 +37,9 @@ class OfferFacadeTest {
         //when
         List<OfferResponseObjectDto> allOffers = offerFacade.getAllOffers();
         //then
-        OfferResponseObject byLinkAsId = repositoryForTest.findByLinkAsId(link);
+        OfferResponseObject byLinkAsId =
+                repositoryForTest.findOfferByLinkToOffer(link)
+                        .orElseThrow(() -> new NoOfferInDBException("No Offer"));
         assertThat(allOffers.get(0)).isEqualTo(MapperOfferResponse.mapToOfferResponseDto(byLinkAsId));
     }
 
@@ -48,8 +51,13 @@ class OfferFacadeTest {
         String nameOfCompany = "CBD1";
         String salary = "3500.00";
         //when
-        OfferResponseObjectDto offerSavedManually = offerFacade.addManualJobOffer(link, nameOfPosition, nameOfCompany, salary);
-        OfferResponseObject byLinkAsId = repositoryForTest.findByLinkAsId("www.jobsforjuniors1.com");
+        OfferResponseObjectDto offerSavedManually = offerFacade.addManualJobOffer(link,
+                nameOfPosition,
+                nameOfCompany,
+                salary);
+        OfferResponseObject byLinkAsId =
+                repositoryForTest.findOfferByLinkToOffer("www.jobsforjuniors1.com")
+                        .orElseThrow(() -> new NoOfferInDBException("No offer"));
         //then
         assertThat(offerSavedManually).isEqualTo(MapperOfferResponse.mapToOfferResponseDto(byLinkAsId));
     }
@@ -57,25 +65,50 @@ class OfferFacadeTest {
     @Test
     void should_return_one_object_when_try_save_duplicates_by_link_of_offer() {
         //given
-        OfferResponseObjectDto offerResponseObjectDto1 = new OfferResponseObjectDto("1", "www.jobsforjuniors1.com", "Junior1", "CBD1", "3500.00");
-        OfferResponseObjectDto offerResponseObjectDto2 = new OfferResponseObjectDto("2", "www.jobsforjuniors1.com", "Junior2", "CBD2", "3500.00");
+        OfferResponseObjectDto offerResponseObjectDto1 = new OfferResponseObjectDto(null, "Junior1", "CBD1", "3500" +
+                ".00", "www.jobsforjuniors1.com");
+        OfferResponseObjectDto offerResponseObjectDto2 = new OfferResponseObjectDto(null, "Junior1", "CBD1", "3500" +
+                ".00", "www.jobsforjuniors1.com");
         //when
         repositoryForTest.save(MapperOfferResponse.mapToOfferResponse(offerResponseObjectDto1));
         repositoryForTest.save(MapperOfferResponse.mapToOfferResponse(offerResponseObjectDto2));
         //then
-        List<OfferResponseObject> allOffersFromRepository = repositoryForTest.getAllOffersFromRepository();
+        List<OfferResponseObject> allOffersFromRepository = repositoryForTest.findAll();
         assertThat(allOffersFromRepository.size()).isEqualTo(1);
     }
 
     @Test
-    void should_return_correct_object_find_by_id() {
+    void should_return_correct_object_find_by_link_to_offer() {
         //given
-        String id = "3";
-        OfferResponseObjectDto expected = new OfferResponseObjectDto("3", "www.jobsforjuniors3.com", "Junior3", "CBD3", "5500.00");
+        String linkToOffer = "www.jobsforjuniors3.com";
+        OfferResponseObjectDto expected = new OfferResponseObjectDto("3", "Junior3", "CBD3", "5500" +
+                ".00", "www.jobsforjuniors3.com");
         List<OfferResponseObjectDto> allOffers = offerFacade.getAllOffers();
         //when
-        OfferResponseObjectDto oneOfferById = offerFacade.findOneOfferById(id);
+        OfferResponseObjectDto oneOfferById = offerFacade.findOfferByLinkToOffer(linkToOffer);
         //then
         assertThat(oneOfferById).isEqualTo(expected);
+    }
+
+    @Test
+    void should_return_one_object_added_manually_two_times_equals_object_offer() {
+        //given
+        String link = "www.jobsforjuniors1.com";
+        String nameOfPosition = "Junior1";
+        String nameOfCompany = "CBD1";
+        String salary = "3500.00";
+        //when
+        OfferResponseObjectDto offerSavedManually1 = offerFacade.addManualJobOffer(link,
+                nameOfPosition,
+                nameOfCompany,
+                salary);
+        OfferResponseObjectDto offerSavedManually2 = offerFacade.addManualJobOffer(link,
+                nameOfPosition,
+                nameOfCompany,
+                salary);
+        List<OfferResponseObjectDto> allOffersFromRepository = offerFacade.getAllOffersFromRepository();
+
+        //then
+        assertThat(allOffersFromRepository.size()).isEqualTo(1);
     }
 }

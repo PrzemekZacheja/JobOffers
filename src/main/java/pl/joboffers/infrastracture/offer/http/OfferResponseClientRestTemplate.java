@@ -22,7 +22,8 @@ public class OfferResponseClientRestTemplate implements OfferResponseClient {
 
     @Override
     public List<OfferResponseObjectDto> getAllOffers() {
-        String url = UriComponentsBuilder.fromHttpUrl(getUrlForService()).toUriString();
+        String url = UriComponentsBuilder.fromHttpUrl(getUrlForService())
+                .toUriString();
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<HttpHeaders> requestEntity = new HttpEntity<>(headers);
         ResponseEntity<List<OfferResponseObjectDto>> responseEntity = restTemplate.exchange(
