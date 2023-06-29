@@ -1,21 +1,21 @@
 package pl.joboffers.feature;
 
-import com.github.tomakehurst.wiremock.client.WireMock;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.ResultActions;
-import pl.joboffers.BaseIntegrationTest;
-import pl.joboffers.domain.offer.OfferFacade;
-import pl.joboffers.domain.offer.dto.OfferResponseObjectDto;
-import pl.joboffers.infrastracture.offer.scheduler.OfferScheduler;
+import com.fasterxml.jackson.core.type.*;
+import com.github.tomakehurst.wiremock.client.*;
+import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.*;
+import org.springframework.http.*;
+import org.springframework.test.web.servlet.*;
+import pl.joboffers.*;
+import pl.joboffers.domain.offer.*;
+import pl.joboffers.domain.offer.dto.*;
+import pl.joboffers.infrastracture.offer.scheduler.*;
 
-import java.util.List;
+import java.util.*;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.assertj.core.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJobOffersResponse {
 
@@ -30,7 +30,11 @@ class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJo
 
 //    step 1: there are no offers in external HTTP server (http://ec2-3-120-147-150.eu-central-1.compute.amazonaws.com:5057/offers)
         //given
-        wireMockServer.stubFor(WireMock.get("/offers").willReturn(WireMock.aResponse().withStatus(HttpStatus.OK.value()).withHeader("Content-Type", "application/json").withBody(bodyWithZeroOffersJson())));
+        wireMockServer.stubFor(WireMock.get("/offers")
+                                       .willReturn(WireMock.aResponse()
+                                                           .withStatus(HttpStatus.OK.value())
+                                                           .withHeader("Content-Type", "application/json")
+                                                           .withBody(bodyWithZeroOffersJson())));
         //when
         List<OfferResponseObjectDto> allOffers = offerFacade.getAllOffers();
         //then
@@ -47,13 +51,21 @@ class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJo
 //    step 4: user made GET /offers with no jwt token and system returned UNAUTHORIZED(401)
 //    step 5: user made POST /register with username=someUser, password=somePassword and system registered user with status OK(200)
 //    step 6: user tried to get JWT token by requesting POST /token with username=someUser, password=somePassword and system returned OK(200) and jwttoken=AAAA.BBBB.CCC
+
+
 //    step 7: user made GET /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) with 0 offers
-        //given & when
-        ResultActions perform = mockMvc.perform(get("/offers").content("""
-                                
-                """).contentType(MediaType.APPLICATION_JSON));
+        //given
+        String urlTemplate = "/offers";
+        // when
+        ResultActions perform = mockMvc.perform(get(urlTemplate).contentType(MediaType.APPLICATION_JSON));
+        MvcResult mvcResult = perform.andExpect(status().isOk())
+                                     .andReturn();
+        String contentAsString = mvcResult.getResponse()
+                                          .getContentAsString();
+        List<OfferResponseObjectDto> offerResponseObjectDtoList = objectMapper.readValue(contentAsString, new TypeReference<>() {
+        });
         //then
-        perform.andExpect(status().isOk());
+        assertThat(offerResponseObjectDtoList).isEmpty();
 
 
 //    step 8: there are 2 new offers in external HTTP server
