@@ -32,7 +32,7 @@ public class BaseIntegrationTest {
             .options(wireMockConfig().dynamicPort())
             .build();
     @Autowired
-    public MockMvc mvc;
+    public MockMvc mockMvc;
     @Autowired
     public ObjectMapper objectMapper;
 
