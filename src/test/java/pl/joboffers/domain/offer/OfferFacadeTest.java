@@ -38,7 +38,7 @@ class OfferFacadeTest {
         List<OfferResponseObjectDto> allOffers = offerFacade.getAllOffers();
         //then
         OfferResponseObject byLinkAsId =
-                repositoryForTest.findOfferByLinkToOffer(link)
+                repositoryForTest.findOfferById(link)
                         .orElseThrow(() -> new NoOfferInDBException("No Offer"));
         assertThat(allOffers.get(0)).isEqualTo(MapperOfferResponse.mapToOfferResponseDto(byLinkAsId));
     }
@@ -56,7 +56,7 @@ class OfferFacadeTest {
                 nameOfCompany,
                 salary);
         OfferResponseObject byLinkAsId =
-                repositoryForTest.findOfferByLinkToOffer("www.jobsforjuniors1.com")
+                repositoryForTest.findOfferById("www.jobsforjuniors1.com")
                         .orElseThrow(() -> new NoOfferInDBException("No offer"));
         //then
         assertThat(offerSavedManually).isEqualTo(MapperOfferResponse.mapToOfferResponseDto(byLinkAsId));
@@ -85,7 +85,7 @@ class OfferFacadeTest {
                 ".00", "www.jobsforjuniors3.com");
         List<OfferResponseObjectDto> allOffers = offerFacade.getAllOffers();
         //when
-        OfferResponseObjectDto oneOfferById = offerFacade.findOfferByLinkToOffer(linkToOffer);
+        OfferResponseObjectDto oneOfferById = offerFacade.findOfferById(linkToOffer);
         //then
         assertThat(oneOfferById).isEqualTo(expected);
     }

@@ -15,10 +15,10 @@ public class OfferFacade {
     public List<OfferResponseObjectDto> getAllOffers() {
         List<OfferResponseObjectDto> allOffers = client.getAllOffers();
         return allOffers.stream()
-                .map(MapperOfferResponse::mapToOfferResponse)
-                .map(repository::save)
-                .map(MapperOfferResponse::mapToOfferResponseDto)
-                .toList();
+                        .map(MapperOfferResponse::mapToOfferResponse)
+                        .map(repository::save)
+                        .map(MapperOfferResponse::mapToOfferResponseDto)
+                        .toList();
     }
 
     public OfferResponseObjectDto addManualJobOffer(String linkToOffer,
@@ -39,14 +39,14 @@ public class OfferFacade {
     public List<OfferResponseObjectDto> getAllOffersFromRepository() {
         List<OfferResponseObject> allOffersFromRepository = repository.findAll();
         return allOffersFromRepository.stream()
-                .map(MapperOfferResponse::mapToOfferResponseDto)
-                .toList();
+                                      .map(MapperOfferResponse::mapToOfferResponseDto)
+                                      .toList();
     }
 
-    public OfferResponseObjectDto findOfferByLinkToOffer(String linkToOffer) {
+    public OfferResponseObjectDto findOfferById(String id) {
         OfferResponseObject offerById =
-                repository.findOfferByLinkToOffer(linkToOffer)
-                        .orElseThrow(() -> new NoOfferInDBException("No offer"));
+                repository.findOfferById(id)
+                          .orElseThrow(() -> new NoOfferInDBException("Not found for id: " + id));
         return MapperOfferResponse.mapToOfferResponseDto(offerById);
     }
 }

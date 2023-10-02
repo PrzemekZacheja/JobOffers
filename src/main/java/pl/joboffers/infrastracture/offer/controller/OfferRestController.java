@@ -1,12 +1,15 @@
 package pl.joboffers.infrastracture.offer.controller;
 
-import lombok.*;
-import org.springframework.http.*;
-import org.springframework.web.bind.annotation.*;
-import pl.joboffers.domain.offer.*;
-import pl.joboffers.domain.offer.dto.*;
+import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import pl.joboffers.domain.offer.OfferFacade;
+import pl.joboffers.domain.offer.dto.OfferResponseObjectDto;
 
-import java.util.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/offers")
@@ -19,5 +22,11 @@ public class OfferRestController {
     public ResponseEntity<List<OfferResponseObjectDto>> getAllOffers() {
         List<OfferResponseObjectDto> allOffers = offerFacade.getAllOffers();
         return ResponseEntity.ok(allOffers);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<OfferResponseObjectDto> getOfferById(@PathVariable String id) {
+        OfferResponseObjectDto offerById = offerFacade.findOfferById(id);
+        return ResponseEntity.ok(offerById);
     }
 }

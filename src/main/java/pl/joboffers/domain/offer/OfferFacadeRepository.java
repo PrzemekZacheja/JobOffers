@@ -8,5 +8,5 @@ import java.util.Optional;
 @Repository
 public interface OfferFacadeRepository extends MongoRepository<OfferResponseObject, String> {
 
-    Optional<OfferResponseObject> findOfferByLinkToOffer(String linkToOffer);
+    Optional<OfferResponseObject> findOfferById(String id);
 }

@@ -24,11 +24,11 @@ public class OfferFacadeRepositoryForTest implements OfferFacadeRepository {
     }
 
 
-    public Optional<OfferResponseObject> findOfferByLinkToOffer(String linkToOffer) {
+    public Optional<OfferResponseObject> findOfferById(String id) {
         return Optional.ofNullable(databaseInMemory.values()
                 .stream()
                 .filter(offerResponseObject -> offerResponseObject.linkToOffer()
-                        .equals(linkToOffer))
+                                                                  .equals(id))
                 .findAny()
                 .orElseThrow(() -> new NoOfferInDBException("No offer in DB")));
     }

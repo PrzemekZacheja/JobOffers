@@ -2,10 +2,13 @@ spring:
   data:
     mongodb:
       uri: mongodb://admin:admin@localhost:27017/offers-web
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
 
 joboffers:
   offer:
-    durationOfResponse: "* * */3 * * *"
+    durationOfResponse: "* * */10 * * *"
     http:
       client:
         config:
