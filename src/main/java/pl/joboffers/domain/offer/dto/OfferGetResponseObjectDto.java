@@ -3,7 +3,7 @@ package pl.joboffers.domain.offer.dto;
 import lombok.Builder;
 
 @Builder
-public record OfferResponseObjectDto(
+public record OfferGetResponseObjectDto(
         String id,
         String title,
         String company,

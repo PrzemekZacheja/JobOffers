@@ -10,7 +10,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import pl.joboffers.BaseIntegrationTest;
 import pl.joboffers.domain.offer.OfferFacade;
-import pl.joboffers.domain.offer.dto.OfferResponseObjectDto;
+import pl.joboffers.domain.offer.dto.OfferGetResponseObjectDto;
 import pl.joboffers.infrastracture.offer.scheduler.OfferScheduler;
 
 import java.util.List;
@@ -39,14 +39,14 @@ class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJo
                                                            .withHeader("Content-Type", "application/json")
                                                            .withBody(bodyWithZeroOffersJson())));
         //when
-        List<OfferResponseObjectDto> allOffers = offerFacade.getAllOffers();
+        List<OfferGetResponseObjectDto> allOffers = offerFacade.getAllOffers();
         //then
         assertThat(allOffers).isEmpty();
 
 
 //    step 2: scheduler ran 1st time and made GET to external server and system added 0 offers to database
         //given & when
-        List<OfferResponseObjectDto> savedOffers = scheduler.scheduleGetAllOffers();
+        List<OfferGetResponseObjectDto> savedOffers = scheduler.scheduleGetAllOffers();
         //then
         assertThat(savedOffers).isEmpty();
 
@@ -65,10 +65,11 @@ class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJo
                                      .andReturn();
         String contentAsString = mvcResult.getResponse()
                                           .getContentAsString();
-        List<OfferResponseObjectDto> offerResponseObjectDtoList = objectMapper.readValue(contentAsString, new TypeReference<>() {
+        List<OfferGetResponseObjectDto> offerGetResponseObjectDtoList = objectMapper.readValue(contentAsString,
+                                                                                               new TypeReference<>() {
         });
         //then
-        assertThat(offerResponseObjectDtoList).isEmpty();
+        assertThat(offerGetResponseObjectDtoList).isEmpty();
 
 
 //    step 8: there are 2 new offers in external HTTP server

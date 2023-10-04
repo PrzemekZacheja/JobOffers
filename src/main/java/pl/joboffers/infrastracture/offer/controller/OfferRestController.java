@@ -2,12 +2,10 @@ package pl.joboffers.infrastracture.offer.controller;
 
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import pl.joboffers.domain.offer.OfferFacade;
-import pl.joboffers.domain.offer.dto.OfferResponseObjectDto;
+import pl.joboffers.domain.offer.dto.OfferGetResponseObjectDto;
+import pl.joboffers.domain.offer.dto.OfferPostResponseObjectDto;
 
 import java.util.List;
 
@@ -19,14 +17,20 @@ public class OfferRestController {
     private final OfferFacade offerFacade;
 
     @GetMapping
-    public ResponseEntity<List<OfferResponseObjectDto>> getAllOffers() {
-        List<OfferResponseObjectDto> allOffers = offerFacade.getAllOffers();
+    public ResponseEntity<List<OfferGetResponseObjectDto>> getAllOffers() {
+        List<OfferGetResponseObjectDto> allOffers = offerFacade.getAllOffers();
         return ResponseEntity.ok(allOffers);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<OfferResponseObjectDto> getOfferById(@PathVariable String id) {
-        OfferResponseObjectDto offerById = offerFacade.findOfferById(id);
+    public ResponseEntity<OfferGetResponseObjectDto> getOfferById(@PathVariable String id) {
+        OfferGetResponseObjectDto offerById = offerFacade.findOfferById(id);
         return ResponseEntity.ok(offerById);
+    }
+
+    @PostMapping
+    public ResponseEntity<OfferGetResponseObjectDto> postOffer(@RequestBody OfferPostResponseObjectDto offer) {
+        OfferGetResponseObjectDto offerGetResponseObjectDto = offerFacade.addManualJobOffer(offer);
+        return ResponseEntity.ok(offerGetResponseObjectDto);
     }
 }

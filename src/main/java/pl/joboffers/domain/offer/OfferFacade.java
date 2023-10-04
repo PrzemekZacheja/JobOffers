@@ -1,7 +1,8 @@
 package pl.joboffers.domain.offer;
 
 import lombok.AllArgsConstructor;
-import pl.joboffers.domain.offer.dto.OfferResponseObjectDto;
+import pl.joboffers.domain.offer.dto.OfferGetResponseObjectDto;
+import pl.joboffers.domain.offer.dto.OfferPostResponseObjectDto;
 
 import java.util.List;
 
@@ -12,8 +13,8 @@ public class OfferFacade {
     private final OfferFacadeRepository repository;
     private final HashGenerator hashGenerator;
 
-    public List<OfferResponseObjectDto> getAllOffers() {
-        List<OfferResponseObjectDto> allOffers = client.getAllOffers();
+    public List<OfferGetResponseObjectDto> getAllOffers() {
+        List<OfferGetResponseObjectDto> allOffers = client.getAllOffers();
         return allOffers.stream()
                         .map(MapperOfferResponse::mapToOfferResponse)
                         .map(repository::save)
@@ -21,29 +22,26 @@ public class OfferFacade {
                         .toList();
     }
 
-    public OfferResponseObjectDto addManualJobOffer(String linkToOffer,
-                                                    String nameOfPosition,
-                                                    String nameOfCompany,
-                                                    String salary) {
+    public OfferGetResponseObjectDto addManualJobOffer(OfferPostResponseObjectDto offer) {
         OfferResponseObject offerResponseObject = OfferResponseObject.builder()
                                                                      .id(hashGenerator.getHash())
-                                                                     .linkToOffer(linkToOffer)
-                                                                     .nameOfPosition(nameOfPosition)
-                                                                     .nameOfCompany(nameOfCompany)
-                                                                     .salary(salary)
+                                                                     .linkToOffer(offer.offerUrl())
+                                                                     .nameOfPosition(offer.title())
+                                                                     .nameOfCompany(offer.company())
+                                                                     .salary(offer.salary())
                                                                      .build();
         repository.save(offerResponseObject);
         return MapperOfferResponse.mapToOfferResponseDto(offerResponseObject);
     }
 
-    public List<OfferResponseObjectDto> getAllOffersFromRepository() {
+    public List<OfferGetResponseObjectDto> getAllOffersFromRepository() {
         List<OfferResponseObject> allOffersFromRepository = repository.findAll();
         return allOffersFromRepository.stream()
                                       .map(MapperOfferResponse::mapToOfferResponseDto)
                                       .toList();
     }
 
-    public OfferResponseObjectDto findOfferById(String id) {
+    public OfferGetResponseObjectDto findOfferById(String id) {
         OfferResponseObject offerById =
                 repository.findOfferById(id)
                           .orElseThrow(() -> new NoOfferInDBException("Not found for id: " + id));
