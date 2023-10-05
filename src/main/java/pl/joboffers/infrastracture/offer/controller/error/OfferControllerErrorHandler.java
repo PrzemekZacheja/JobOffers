@@ -1,5 +1,6 @@
 package pl.joboffers.infrastracture.offer.controller.error;
 
+import com.mongodb.DuplicateKeyException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -16,6 +17,14 @@ public class OfferControllerErrorHandler {
     @ResponseBody
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public OfferErrorResponseDto handleOfferNotFoundException(NoOfferInDBException e) {
+        log.error(e.getMessage());
+        return new OfferErrorResponseDto(e.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DuplicateKeyException.class)
+    @ResponseBody
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public OfferErrorResponseDto handleOfferDuplicatedException(DuplicateKeyException e) {
         log.error(e.getMessage());
         return new OfferErrorResponseDto(e.getMessage(), HttpStatus.NOT_FOUND);
     }

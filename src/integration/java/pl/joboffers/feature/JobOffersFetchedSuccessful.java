@@ -17,6 +17,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -67,7 +68,7 @@ class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJo
                                           .getContentAsString();
         List<OfferGetResponseObjectDto> offerGetResponseObjectDtoList = objectMapper.readValue(contentAsString,
                                                                                                new TypeReference<>() {
-        });
+                                                                                               });
         //then
         assertThat(offerGetResponseObjectDtoList).isEmpty();
 
@@ -96,6 +97,33 @@ class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJo
 //    step 13: there are 2 new offers in external HTTP server
 //    step 14: scheduler ran 3rd time and made GET to external server and system added 2 new offers with ids: 3000 and 4000 to database
 //    step 15: user made GET /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) with 4 offers with ids: 1000,2000, 3000 and 4000
-//
+
+
+//    stet 16: user made POST /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and offers as body and system returned CREATED(201) with saved offer
+        //given
+        urlTemplate = "/offers";
+        //when
+        ResultActions performPostOffer = mockMvc.perform(post(urlTemplate).content("""
+                                                                                             {
+                                                                                                "title": "string11",
+                                                                                                "company": "string11",
+                                                                                                "salary": "string1",
+                                                                                                "offerUrl": "string1"
+                                                                                              }
+                                                                                           """)
+                                                                          .contentType(MediaType.APPLICATION_JSON));
+        //then
+        performPostOffer.andExpect(status().isCreated())
+                        .andExpect(content().json("""
+                                                          {
+                                                             "title": "string11",
+                                                             "company": "string11",
+                                                             "salary": "string1",
+                                                             "offerUrl": "string1"
+                                                           }
+                                                          """));
+
+//    step 17: user made GET /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) 1 offer
+
     }
 }

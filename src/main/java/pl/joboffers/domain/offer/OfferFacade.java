@@ -22,7 +22,22 @@ public class OfferFacade {
                         .toList();
     }
 
-    public OfferGetResponseObjectDto addManualJobOffer(OfferPostResponseObjectDto offer) {
+    public OfferGetResponseObjectDto addManualJobOffer(String linkToOffer,
+                                                       String nameOfPosition,
+                                                       String nameOfCompany,
+                                                       String salary) {
+        OfferResponseObject offerResponseObject = OfferResponseObject.builder()
+                                                                     .id(hashGenerator.getHash())
+                                                                     .linkToOffer(linkToOffer)
+                                                                     .nameOfPosition(nameOfPosition)
+                                                                     .nameOfCompany(nameOfCompany)
+                                                                     .salary(salary)
+                                                                     .build();
+        repository.save(offerResponseObject);
+        return MapperOfferResponse.mapToOfferResponseDto(offerResponseObject);
+    }
+
+    public OfferPostResponseObjectDto addManualJobOffer(OfferPostResponseObjectDto offer) {
         OfferResponseObject offerResponseObject = OfferResponseObject.builder()
                                                                      .id(hashGenerator.getHash())
                                                                      .linkToOffer(offer.offerUrl())
@@ -31,7 +46,7 @@ public class OfferFacade {
                                                                      .salary(offer.salary())
                                                                      .build();
         repository.save(offerResponseObject);
-        return MapperOfferResponse.mapToOfferResponseDto(offerResponseObject);
+        return MapperOfferResponse.mapToOfferPostResponseObjectDto(offerResponseObject);
     }
 
     public List<OfferGetResponseObjectDto> getAllOffersFromRepository() {

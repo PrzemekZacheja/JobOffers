@@ -1,6 +1,7 @@
 package pl.joboffers.infrastracture.offer.controller;
 
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.joboffers.domain.offer.OfferFacade;
@@ -29,8 +30,9 @@ public class OfferRestController {
     }
 
     @PostMapping
-    public ResponseEntity<OfferGetResponseObjectDto> postOffer(@RequestBody OfferPostResponseObjectDto offer) {
-        OfferGetResponseObjectDto offerGetResponseObjectDto = offerFacade.addManualJobOffer(offer);
-        return ResponseEntity.ok(offerGetResponseObjectDto);
+    public ResponseEntity<OfferPostResponseObjectDto> postOffer(@RequestBody OfferPostResponseObjectDto offer) {
+        OfferPostResponseObjectDto offerGetResponseObjectDto = offerFacade.addManualJobOffer(offer);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                             .body(offerGetResponseObjectDto);
     }
 }

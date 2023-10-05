@@ -1,6 +1,7 @@
 package pl.joboffers.domain.offer;
 
 import pl.joboffers.domain.offer.dto.OfferGetResponseObjectDto;
+import pl.joboffers.domain.offer.dto.OfferPostResponseObjectDto;
 
 public class MapperOfferResponse {
 
@@ -22,5 +23,15 @@ public class MapperOfferResponse {
                                         .title(offer.nameOfPosition())
                                         .salary(offer.salary())
                                         .build();
+    }
+
+    public static OfferPostResponseObjectDto mapToOfferPostResponseObjectDto(OfferResponseObject offerResponseObject) {
+        return OfferPostResponseObjectDto.builder()
+                                         .offerUrl(offerResponseObject.linkToOffer())
+                                         .company(offerResponseObject.nameOfCompany())
+                                         .title(offerResponseObject.nameOfPosition())
+                                         .salary(offerResponseObject.salary())
+                                         .build();
+
     }
 }
