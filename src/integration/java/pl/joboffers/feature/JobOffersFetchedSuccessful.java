@@ -10,12 +10,14 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import pl.joboffers.BaseIntegrationTest;
 import pl.joboffers.domain.offer.OfferFacade;
-import pl.joboffers.domain.offer.dto.OfferGetResponseObjectDto;
+import pl.joboffers.domain.offer.dto.OfferGetResponseDto;
+import pl.joboffers.domain.offer.dto.OfferPostResponseDto;
 import pl.joboffers.infrastracture.offer.scheduler.OfferScheduler;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -40,14 +42,14 @@ class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJo
                                                            .withHeader("Content-Type", "application/json")
                                                            .withBody(bodyWithZeroOffersJson())));
         //when
-        List<OfferGetResponseObjectDto> allOffers = offerFacade.getAllOffers();
+        List<OfferGetResponseDto> allOffers = offerFacade.getAllOffers();
         //then
         assertThat(allOffers).isEmpty();
 
 
 //    step 2: scheduler ran 1st time and made GET to external server and system added 0 offers to database
         //given & when
-        List<OfferGetResponseObjectDto> savedOffers = scheduler.scheduleGetAllOffers();
+        List<OfferGetResponseDto> savedOffers = scheduler.scheduleGetAllOffers();
         //then
         assertThat(savedOffers).isEmpty();
 
@@ -61,16 +63,16 @@ class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJo
         //given
         String urlTemplate = "/offers";
         // when
-        ResultActions perform = mockMvc.perform(get(urlTemplate).contentType(MediaType.APPLICATION_JSON));
+        ResultActions perform = mockMvc.perform(get(urlTemplate).contentType(MediaType.APPLICATION_JSON_VALUE));
         MvcResult mvcResult = perform.andExpect(status().isOk())
                                      .andReturn();
         String contentAsString = mvcResult.getResponse()
                                           .getContentAsString();
-        List<OfferGetResponseObjectDto> offerGetResponseObjectDtoList = objectMapper.readValue(contentAsString,
-                                                                                               new TypeReference<>() {
-                                                                                               });
+        List<OfferGetResponseDto> offerGetResponseDtoList = objectMapper.readValue(contentAsString,
+                                                                                   new TypeReference<>() {
+                                                                                   });
         //then
-        assertThat(offerGetResponseObjectDtoList).isEmpty();
+        assertThat(offerGetResponseDtoList).isEmpty();
 
 
 //    step 8: there are 2 new offers in external HTTP server
@@ -82,7 +84,8 @@ class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJo
         //given
         urlTemplate = "/offers/9999";
         //when
-        ResultActions performGetOfferWithNoExistingId = mockMvc.perform(get(urlTemplate).contentType(MediaType.APPLICATION_JSON));
+        ResultActions performGetOfferWithNoExistingId = mockMvc.perform(
+                get(urlTemplate).contentType(MediaType.APPLICATION_JSON_VALUE));
         //then
         performGetOfferWithNoExistingId.andExpect(status().isNotFound())
                                        .andExpect(content().json("""
@@ -105,25 +108,39 @@ class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJo
         //when
         ResultActions performPostOffer = mockMvc.perform(post(urlTemplate).content("""
                                                                                              {
-                                                                                                "title": "string11",
-                                                                                                "company": "string11",
-                                                                                                "salary": "string1",
-                                                                                                "offerUrl": "string1"
+                                                                                                "title": "string Title",
+                                                                                                "company": "string Company",
+                                                                                                "salary": "string Salary",
+                                                                                                "offerUrl": "string OfferURL"
                                                                                               }
-                                                                                           """)
-                                                                          .contentType(MediaType.APPLICATION_JSON));
+                                                                                           """.trim())
+                                                                          .contentType(
+                                                                                  MediaType.APPLICATION_JSON_VALUE + ";" + "charset=UTF-8"));
         //then
-        performPostOffer.andExpect(status().isCreated())
-                        .andExpect(content().json("""
-                                                          {
-                                                             "title": "string11",
-                                                             "company": "string11",
-                                                             "salary": "string1",
-                                                             "offerUrl": "string1"
-                                                           }
-                                                          """));
+        MvcResult creadtedMvcResult = performPostOffer.andExpect(status().isCreated())
+                                                      .andReturn();
+        String createdContentAsString = creadtedMvcResult.getResponse()
+                                                         .getContentAsString();
+        OfferPostResponseDto parsedOfferSavedDto = objectMapper.readValue(createdContentAsString, OfferPostResponseDto.class);
+        assertAll(() -> assertThat(parsedOfferSavedDto.id()).isNotNull(),
+                  () -> assertThat(parsedOfferSavedDto.title()).isEqualTo("string Title"),
+                  () -> assertThat(parsedOfferSavedDto.company()).isEqualTo("string Company"),
+                  () -> assertThat(parsedOfferSavedDto.salary()).isEqualTo("string Salary"),
+                  () -> assertThat(parsedOfferSavedDto.offerUrl()).isEqualTo("string OfferURL"),
+                  () -> assertThat(parsedOfferSavedDto.id()).isNotNull());
+
 
 //    step 17: user made GET /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) 1 offer
-
+        //given
+        //when
+        ResultActions performGetOffer = mockMvc.perform(get(urlTemplate).contentType(MediaType.APPLICATION_JSON_VALUE));
+        //then
+        String oneOfferJson = performGetOffer.andExpect(status().isOk())
+                                             .andReturn()
+                                             .getResponse()
+                                             .getContentAsString();
+        List<OfferGetResponseDto> listOfOffers = objectMapper.readValue(oneOfferJson, new TypeReference<>() {
+        });
+        assertThat(listOfOffers).hasSize(1);
     }
 }
