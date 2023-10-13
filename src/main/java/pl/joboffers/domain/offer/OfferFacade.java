@@ -1,8 +1,9 @@
 package pl.joboffers.domain.offer;
 
 import lombok.AllArgsConstructor;
-import pl.joboffers.domain.offer.dto.OfferGetResponseObjectDto;
-import pl.joboffers.domain.offer.dto.OfferPostResponseObjectDto;
+import pl.joboffers.domain.offer.dto.OfferGetResponseDto;
+import pl.joboffers.domain.offer.dto.OfferPostRequestDto;
+import pl.joboffers.domain.offer.dto.OfferPostResponseDto;
 
 import java.util.List;
 
@@ -13,53 +14,51 @@ public class OfferFacade {
     private final OfferFacadeRepository repository;
     private final HashGenerator hashGenerator;
 
-    public List<OfferGetResponseObjectDto> getAllOffers() {
-        List<OfferGetResponseObjectDto> allOffers = client.getAllOffers();
+    public List<OfferGetResponseDto> getAllOffers() {
+        List<OfferGetResponseDto> allOffers = client.getAllOffers();
         return allOffers.stream()
                         .map(MapperOfferResponse::mapToOfferResponse)
                         .map(repository::save)
-                        .map(MapperOfferResponse::mapToOfferResponseDto)
+                        .map(MapperOfferResponse::mapToOfferGetResponseDto)
                         .toList();
     }
 
-    public OfferGetResponseObjectDto addManualJobOffer(String linkToOffer,
-                                                       String nameOfPosition,
-                                                       String nameOfCompany,
-                                                       String salary) {
-        OfferResponseObject offerResponseObject = OfferResponseObject.builder()
-                                                                     .id(hashGenerator.getHash())
-                                                                     .linkToOffer(linkToOffer)
-                                                                     .nameOfPosition(nameOfPosition)
-                                                                     .nameOfCompany(nameOfCompany)
-                                                                     .salary(salary)
-                                                                     .build();
-        repository.save(offerResponseObject);
-        return MapperOfferResponse.mapToOfferResponseDto(offerResponseObject);
+    public OfferPostResponseDto addManualJobOffer(String linkToOffer,
+                                                  String nameOfPosition,
+                                                  String nameOfCompany,
+                                                  String salary) {
+        OfferResponse offerResponse = OfferResponse.builder()
+                                                   .id(hashGenerator.getHash())
+                                                   .linkToOffer(linkToOffer)
+                                                   .nameOfPosition(nameOfPosition)
+                                                   .nameOfCompany(nameOfCompany)
+                                                   .salary(salary)
+                                                   .build();
+        OfferResponse save = repository.save(offerResponse);
+        OfferResponse saved =
+                repository.findOfferByLinkToOffer(offerResponse.linkToOffer())
+                          .orElseThrow(() -> new NoOfferInDBException("Not found for link: " + offerResponse.linkToOffer()));
+        return MapperOfferResponse.mapToOfferPostResponseDto(saved);
     }
 
-    public OfferPostResponseObjectDto addManualJobOffer(OfferPostResponseObjectDto offer) {
-        OfferResponseObject offerResponseObject = OfferResponseObject.builder()
-                                                                     .id(hashGenerator.getHash())
-                                                                     .linkToOffer(offer.offerUrl())
-                                                                     .nameOfPosition(offer.title())
-                                                                     .nameOfCompany(offer.company())
-                                                                     .salary(offer.salary())
-                                                                     .build();
-        repository.save(offerResponseObject);
-        return MapperOfferResponse.mapToOfferPostResponseObjectDto(offerResponseObject);
+    public OfferPostResponseDto addManualJobOfferByObject(OfferPostRequestDto offerRequestDto) {
+        return addManualJobOffer(offerRequestDto.offerUrl(),
+                                 offerRequestDto.title(),
+                                 offerRequestDto.company(),
+                                 offerRequestDto.salary());
     }
 
-    public List<OfferGetResponseObjectDto> getAllOffersFromRepository() {
-        List<OfferResponseObject> allOffersFromRepository = repository.findAll();
+    public List<OfferGetResponseDto> getAllOffersFromRepository() {
+        List<OfferResponse> allOffersFromRepository = repository.findAll();
         return allOffersFromRepository.stream()
-                                      .map(MapperOfferResponse::mapToOfferResponseDto)
+                                      .map(MapperOfferResponse::mapToOfferGetResponseDto)
                                       .toList();
     }
 
-    public OfferGetResponseObjectDto findOfferById(String id) {
-        OfferResponseObject offerById =
-                repository.findOfferById(id)
+    public OfferGetResponseDto findOfferById(String id) {
+        OfferResponse offerById =
+                repository.findOfferByLinkToOffer(id)
                           .orElseThrow(() -> new NoOfferInDBException("Not found for id: " + id));
-        return MapperOfferResponse.mapToOfferResponseDto(offerById);
+        return MapperOfferResponse.mapToOfferGetResponseDto(offerById);
     }
 }

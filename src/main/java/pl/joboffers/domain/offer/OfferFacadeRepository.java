@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface OfferFacadeRepository extends MongoRepository<OfferResponseObject, String> {
+public interface OfferFacadeRepository extends MongoRepository<OfferResponse, String> {
 
-    Optional<OfferResponseObject> findOfferById(String id);
+    Optional<OfferResponse> findOfferByLinkToOffer(String id);
 }

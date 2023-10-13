@@ -5,7 +5,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import pl.joboffers.domain.offer.OfferFacade;
-import pl.joboffers.domain.offer.dto.OfferGetResponseObjectDto;
+import pl.joboffers.domain.offer.dto.OfferGetResponseDto;
 
 import java.util.List;
 
@@ -17,9 +17,9 @@ public class OfferScheduler {
     private final OfferFacade offerFacade;
 
     @Scheduled(cron = "${joboffers.offer.durationOfResponse}")
-    public List<OfferGetResponseObjectDto> scheduleGetAllOffers() {
+    public List<OfferGetResponseDto> scheduleGetAllOffers() {
         log.info("Scheduling");
-        List<OfferGetResponseObjectDto> allOffers = offerFacade.getAllOffers();
+        List<OfferGetResponseDto> allOffers = offerFacade.getAllOffers();
         log.info(allOffers.size());
         return allOffers;
     }

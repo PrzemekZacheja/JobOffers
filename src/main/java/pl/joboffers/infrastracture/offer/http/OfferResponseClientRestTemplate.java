@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import pl.joboffers.domain.offer.OfferResponseClient;
-import pl.joboffers.domain.offer.dto.OfferGetResponseObjectDto;
+import pl.joboffers.domain.offer.dto.OfferGetResponseDto;
 
 import java.util.List;
 
@@ -21,12 +21,12 @@ public class OfferResponseClientRestTemplate implements OfferResponseClient {
     private final int ports;
 
     @Override
-    public List<OfferGetResponseObjectDto> getAllOffers() {
+    public List<OfferGetResponseDto> getAllOffers() {
         String url = UriComponentsBuilder.fromHttpUrl(getUrlForService())
                 .toUriString();
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<HttpHeaders> requestEntity = new HttpEntity<>(headers);
-        ResponseEntity<List<OfferGetResponseObjectDto>> responseEntity = restTemplate.exchange(
+        ResponseEntity<List<OfferGetResponseDto>> responseEntity = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
                 requestEntity,

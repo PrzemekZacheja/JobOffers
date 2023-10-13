@@ -7,13 +7,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Builder
 @Document
-record OfferResponseObject(
-        @Id
-        String id,
-        @Indexed(unique = true)
-        String linkToOffer,
-        String nameOfPosition,
-        String nameOfCompany,
-        String salary
-) {
+record OfferResponse(@Id String id,
+                     @Indexed(unique = true) String linkToOffer,
+                     String nameOfPosition,
+                     String nameOfCompany,
+                     String salary) {
 }
