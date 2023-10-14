@@ -1,15 +1,14 @@
 package pl.joboffers.domain.offer;
 
-import pl.joboffers.domain.offer.dto.OfferGetResponseDto;
 import pl.joboffers.domain.offer.dto.OfferPostResponseDto;
 
 public class MapperOfferResponse {
 
-    public static OfferResponse mapToOfferResponse(OfferGetResponseDto offer) {
-        return OfferResponse.builder()
+/*    public static Offer mapToOfferResponse(OfferGetResponseDto offer) {
+        return offer.builder()
                             .id(offer.id())
-                            .linkToOffer(offer.offerUrl())
-                            .nameOfCompany(offer.company())
+                            .offerUrl(offer.offerUrl())
+                            .company(offer.company())
                             .nameOfPosition(offer.title())
                             .salary(offer.salary())
                             .build();
@@ -25,13 +24,13 @@ public class MapperOfferResponse {
                                   .build();
     }
 
-    public static OfferPostResponseDto mapToOfferPostResponseDto(OfferResponse offerResponse) {
+    public static OfferPostResponseDto mapToOfferPostResponseDto(Offer offer) {
         return OfferPostResponseDto.builder()
-                                   .id(offerResponse.id())
-                                   .offerUrl(offerResponse.linkToOffer())
-                                   .company(offerResponse.nameOfCompany())
-                                   .title(offerResponse.nameOfPosition())
-                                   .salary(offerResponse.salary())
+                                   .id(offer.id())
+                                   .offerUrl(offer.offerUrl())
+                                   .company(offer.company())
+                                   .title(offer.title())
+                                   .salary(offer.salary())
                                    .build();
 
     }

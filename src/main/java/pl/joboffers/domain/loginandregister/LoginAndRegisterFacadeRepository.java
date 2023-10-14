@@ -2,7 +2,7 @@ package pl.joboffers.domain.loginandregister;
 
 import java.util.Optional;
 
-public interface LoginAndRegisterFacadeRepository {
+public interface LoginAndRegisterFacadeRepository extends MongoRepository<User, String> {
 
     User save(User user);
 

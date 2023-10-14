@@ -33,7 +33,7 @@ public class OfferRestController {
 
     @PostMapping
     public ResponseEntity<OfferPostResponseDto> postOffer(@RequestBody @Valid OfferPostRequestDto offer) {
-        OfferPostResponseDto offerGetResponseObjectDto = offerFacade.addManualJobOfferByObject(offer);
+        OfferPostResponseDto offerGetResponseObjectDto = offerFacade.addManualJobOffer(offer);
         return ResponseEntity.status(HttpStatus.CREATED)
                              .body(offerGetResponseObjectDto);
     }

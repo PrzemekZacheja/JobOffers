@@ -1,13 +1,5 @@
 package pl.joboffers.domain.offer;
 
-import org.junit.jupiter.api.Test;
-import pl.joboffers.domain.offer.dto.OfferGetResponseDto;
-import pl.joboffers.domain.offer.dto.OfferPostResponseDto;
-
-import java.util.List;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-
 class OfferFacadeTest {
 
     OfferFacadeRepository repositoryForTest = new OfferFacadeRepositoryForTest();

@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.FluentQuery;
+import pl.joboffers.domain.offer.dto.OfferGetResponseDto;
 
 import java.util.List;
 import java.util.Map;
@@ -27,7 +28,7 @@ public class OfferFacadeRepositoryForTest implements OfferFacadeRepository {
     public Optional<OfferResponse> findOfferByLinkToOffer(String linkToOffer) {
         return Optional.ofNullable(databaseInMemory.values()
                 .stream()
-                .filter(offerResponseObject -> offerResponseObject.linkToOffer()
+                                                   .filter(offerResponseObject -> offerResponseObject.offerUrl()
                                                                   .equals(linkToOffer))
                 .findAny()
                 .orElseThrow(() -> new NoOfferInDBException("No offer in DB")));
@@ -146,6 +147,11 @@ public class OfferFacadeRepositoryForTest implements OfferFacadeRepository {
     @Override
     public <S extends OfferResponse, R> R findBy(final Example<S> example,
                                                  final Function<FluentQuery.FetchableFluentQuery<S>, R> queryFunction) {
+        return null;
+    }
+
+    @Override
+    public List<OfferGetResponseDto> findAllBy() {
         return null;
     }
 }

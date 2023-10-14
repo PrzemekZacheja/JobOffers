@@ -23,40 +23,28 @@ public class OfferFacade {
                         .toList();
     }
 
-    public OfferPostResponseDto addManualJobOffer(String linkToOffer,
-                                                  String nameOfPosition,
-                                                  String nameOfCompany,
-                                                  String salary) {
-        OfferResponse offerResponse = OfferResponse.builder()
-                                                   .id(hashGenerator.getHash())
-                                                   .linkToOffer(linkToOffer)
-                                                   .nameOfPosition(nameOfPosition)
-                                                   .nameOfCompany(nameOfCompany)
-                                                   .salary(salary)
-                                                   .build();
-        OfferResponse save = repository.save(offerResponse);
-        OfferResponse saved =
-                repository.findOfferByLinkToOffer(offerResponse.linkToOffer())
-                          .orElseThrow(() -> new NoOfferInDBException("Not found for link: " + offerResponse.linkToOffer()));
-        return MapperOfferResponse.mapToOfferPostResponseDto(saved);
+
+    public OfferPostResponseDto addManualJobOffer(OfferPostRequestDto offerRequestDto) {
+        Offer offer = Offer.builder()
+                           .offerUrl(offerRequestDto.offerUrl())
+                           .title(offerRequestDto.title())
+                           .company(offerRequestDto.company())
+                           .salary(offerRequestDto.salary())
+                           .build();
+        Offer offerSaved = repository.save(offer);
+        log.info("offer save");
+        return MapperOfferResponse.mapToOfferPostResponseDto(offerSaved);
     }
 
-    public OfferPostResponseDto addManualJobOfferByObject(OfferPostRequestDto offerRequestDto) {
-        return addManualJobOffer(offerRequestDto.offerUrl(),
-                                 offerRequestDto.title(),
-                                 offerRequestDto.company(),
-                                 offerRequestDto.salary());
-    }
-
-    public List<OfferGetResponseDto> getAllOffersFromRepository() {
-        List<OfferResponse> allOffersFromRepository = repository.findAll();
+/*    public List<OfferGetResponseDto> getAllOffersFromRepository() {
+        List<Offer> allOffersFromRepository = repository.findAll();
         return allOffersFromRepository.stream()
                                       .map(MapperOfferResponse::mapToOfferGetResponseDto)
                                       .toList();
     }
 
     public OfferGetResponseDto findOfferById(String id) {
-        OfferResponse offerById =
+        Offer offerById =
                 repository.findOfferByLinkToOffer(id)
                           .orElseThrow(() -> new NoOfferInDBException("Not found for id: " + id));
         return MapperOfferResponse.mapToOfferGetResponseDto(offerById);

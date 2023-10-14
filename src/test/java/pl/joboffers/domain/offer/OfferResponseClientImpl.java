@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import pl.joboffers.domain.offer.dto.OfferGetResponseDto;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @AllArgsConstructor
 public class OfferResponseClientImpl implements OfferResponseClient {
