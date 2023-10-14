@@ -1,12 +1,14 @@
 package pl.joboffers.domain.loginandregister;
 
 import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Component;
 import pl.joboffers.domain.loginandregister.dto.UserDto;
 
 @AllArgsConstructor
+@Component
 public class LoginAndRegisterFacade {
 
-    LoginAndRegisterFacadeRepository repository;
+    private final LoginAndRegisterFacadeRepository repository;
 
     public UserDto registerUser(String email, String password) {
         boolean savedInRepository = isSavedInRepository(email);

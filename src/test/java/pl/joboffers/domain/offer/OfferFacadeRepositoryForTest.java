@@ -15,17 +15,17 @@ import java.util.function.Function;
 
 public class OfferFacadeRepositoryForTest implements OfferFacadeRepository {
 
-    Map<String, OfferResponse> databaseInMemory = new ConcurrentHashMap<>();
+    Map<String, Offer> databaseInMemory = new ConcurrentHashMap<>();
 
 
     @Override
-    public <S extends OfferResponse> S save(final S entity) {
-        databaseInMemory.put(entity.linkToOffer(), entity);
+    public <S extends Offer> S save(final S entity) {
+        databaseInMemory.put(entity.offerUrl(), entity);
         return entity;
     }
 
 
-    public Optional<OfferResponse> findOfferByLinkToOffer(String linkToOffer) {
+    public Optional<Offer> findOfferByLinkToOffer(String linkToOffer) {
         return Optional.ofNullable(databaseInMemory.values()
                 .stream()
                                                    .filter(offerResponseObject -> offerResponseObject.offerUrl()
@@ -40,35 +40,54 @@ public class OfferFacadeRepositoryForTest implements OfferFacadeRepository {
         return false;
     }
 
+
     @Override
-    public <S extends OfferResponse> List<S> saveAll(final Iterable<S> entities) {
+    public <S extends Offer> List<S> saveAll(Iterable<S> entities) {
         return null;
     }
 
     @Override
-    public Optional<OfferResponse> findById(final String s) {
+    public List<Offer> findAll() {
+        return null;
+    }
+
+    @Override
+    public List<Offer> findAll(Sort sort) {
+        return null;
+    }
+
+    @Override
+    public <S extends Offer> S insert(S entity) {
+        return null;
+    }
+
+    @Override
+    public <S extends Offer> List<S> insert(Iterable<S> entities) {
+        return null;
+    }
+
+    @Override
+    public <S extends Offer> List<S> findAll(Example<S> example) {
+        return null;
+    }
+
+    @Override
+    public <S extends Offer> List<S> findAll(Example<S> example, Sort sort) {
+        return null;
+    }
+
+    @Override
+    public Page<Offer> findAll(Pageable pageable) {
+        return null;
+    }
+
+    @Override
+    public Optional<Offer> findById(String s) {
         return Optional.empty();
     }
 
     @Override
-    public List<OfferResponse> findAll() {
-        return databaseInMemory.values()
-                .stream()
-                .toList();
-    }
-
-    @Override
-    public Iterable<OfferResponse> findAllById(final Iterable<String> strings) {
-        return null;
-    }
-
-    @Override
-    public List<OfferResponse> findAll(final Sort sort) {
-        return null;
-    }
-
-    @Override
-    public Page<OfferResponse> findAll(final Pageable pageable) {
+    public Iterable<Offer> findAllById(Iterable<String> strings) {
         return null;
     }
 
@@ -78,75 +97,52 @@ public class OfferFacadeRepositoryForTest implements OfferFacadeRepository {
     }
 
     @Override
-    public void deleteById(final String s) {
+    public void deleteById(String s) {
 
     }
 
     @Override
-    public void delete(final OfferResponse entity) {
+    public void delete(Offer entity) {
 
     }
 
     @Override
-    public void deleteAllById(final Iterable<? extends String> strings) {
+    public void deleteAllById(Iterable<? extends String> strings) {
 
     }
 
     @Override
-    public void deleteAll(final Iterable<? extends OfferResponse> entities) {
+    public void deleteAll(Iterable<? extends Offer> entities) {
 
     }
-
 
     @Override
     public void deleteAll() {
 
     }
 
-
     @Override
-    public <S extends OfferResponse> S insert(final S entity) {
-        return null;
-    }
-
-    @Override
-    public <S extends OfferResponse> List<S> insert(final Iterable<S> entities) {
-        return null;
-    }
-
-    @Override
-    public <S extends OfferResponse> Optional<S> findOne(final Example<S> example) {
+    public <S extends Offer> Optional<S> findOne(Example<S> example) {
         return Optional.empty();
     }
 
     @Override
-    public <S extends OfferResponse> List<S> findAll(final Example<S> example) {
+    public <S extends Offer> Page<S> findAll(Example<S> example, Pageable pageable) {
         return null;
     }
 
     @Override
-    public <S extends OfferResponse> List<S> findAll(final Example<S> example, final Sort sort) {
-        return null;
-    }
-
-    @Override
-    public <S extends OfferResponse> Page<S> findAll(final Example<S> example, final Pageable pageable) {
-        return null;
-    }
-
-    @Override
-    public <S extends OfferResponse> long count(final Example<S> example) {
+    public <S extends Offer> long count(Example<S> example) {
         return 0;
     }
 
     @Override
-    public <S extends OfferResponse> boolean exists(final Example<S> example) {
+    public <S extends Offer> boolean exists(Example<S> example) {
         return false;
     }
 
     @Override
-    public <S extends OfferResponse, R> R findBy(final Example<S> example,
-                                                 final Function<FluentQuery.FetchableFluentQuery<S>, R> queryFunction) {
+    public <S extends Offer, R> R findBy(Example<S> example, Function<FluentQuery.FetchableFluentQuery<S>, R> queryFunction) {
         return null;
     }
 

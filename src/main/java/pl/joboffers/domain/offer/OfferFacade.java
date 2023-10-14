@@ -1,6 +1,7 @@
 package pl.joboffers.domain.offer;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import pl.joboffers.domain.offer.dto.OfferGetResponseDto;
 import pl.joboffers.domain.offer.dto.OfferPostRequestDto;
 import pl.joboffers.domain.offer.dto.OfferPostResponseDto;
@@ -8,19 +9,20 @@ import pl.joboffers.domain.offer.dto.OfferPostResponseDto;
 import java.util.List;
 
 @AllArgsConstructor
+@Log4j2
 public class OfferFacade {
 
     private final OfferResponseClient client;
     private final OfferFacadeRepository repository;
-    private final HashGenerator hashGenerator;
 
     public List<OfferGetResponseDto> getAllOffers() {
         List<OfferGetResponseDto> allOffers = client.getAllOffers();
-        return allOffers.stream()
+        return repository.findAllBy();
+      /*  return allOffers.stream()
                         .map(MapperOfferResponse::mapToOfferResponse)
                         .map(repository::save)
                         .map(MapperOfferResponse::mapToOfferGetResponseDto)
-                        .toList();
+                        .toList();*/
     }
 
 
@@ -48,5 +50,5 @@ public class OfferFacade {
                 repository.findOfferByLinkToOffer(id)
                           .orElseThrow(() -> new NoOfferInDBException("Not found for id: " + id));
         return MapperOfferResponse.mapToOfferGetResponseDto(offerById);
-    }
+    }*/
 }

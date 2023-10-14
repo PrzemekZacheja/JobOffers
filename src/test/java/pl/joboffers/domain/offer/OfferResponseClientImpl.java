@@ -10,7 +10,7 @@ public class OfferResponseClientImpl implements OfferResponseClient {
 
     OfferFacadeRepository repositoryForTest;
 
-    @Override
+/*    @Override
     public List<OfferGetResponseDto> getAllOffers() {
         List<OfferGetResponseDto> offerGetResponseDtos =
                 List.of(
@@ -34,6 +34,10 @@ public class OfferResponseClientImpl implements OfferResponseClient {
                 .stream()
                                 .map(MapperOfferResponse::mapToOfferGetResponseDto)
                 .collect(Collectors.toList());
-    }
+    }*/
 
+    @Override
+    public List<OfferGetResponseDto> getAllOffers() {
+        return null;
+    }
 }

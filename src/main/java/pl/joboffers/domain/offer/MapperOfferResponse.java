@@ -22,7 +22,7 @@ public class MapperOfferResponse {
                                   .title(offer.nameOfPosition())
                                   .salary(offer.salary())
                                   .build();
-    }
+    }*/
 
     public static OfferPostResponseDto mapToOfferPostResponseDto(Offer offer) {
         return OfferPostResponseDto.builder()
