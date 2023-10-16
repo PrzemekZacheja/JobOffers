@@ -10,7 +10,7 @@ class OfferFacadeTest {
 
     @Test
     void should_return_dto_object() {
-        assertThat(offerFacade.getAllOffers()
+        assertThat(offerFacade.fetchAllUniqueOfferFromForeignAPI()
                               .get(0)).isInstanceOf(OfferGetResponseDto.class);
     }
 
@@ -18,7 +18,7 @@ class OfferFacadeTest {
     void should_return_list_of_3_object_from_client() {
         //given
         //when
-        List<OfferGetResponseDto> allOffers = offerFacade.getAllOffers();
+        List<OfferGetResponseDto> allOffers = offerFacade.fetchAllUniqueOfferFromForeignAPI();
         //then
         assertThat(allOffers.size()).isEqualTo(3);
     }
@@ -28,7 +28,7 @@ class OfferFacadeTest {
         //given
         String link = "www.jobsforjuniors1.com";
         //when
-        List<OfferGetResponseDto> allOffers = offerFacade.getAllOffers();
+        List<OfferGetResponseDto> allOffers = offerFacade.fetchAllUniqueOfferFromForeignAPI();
         //then
         OfferResponse byLinkAsId =
                 repositoryForTest.findOfferByLinkToOffer(link)
@@ -76,7 +76,7 @@ class OfferFacadeTest {
         String linkToOffer = "www.jobsforjuniors3.com";
         OfferGetResponseDto expected = new OfferGetResponseDto("3", "Junior3", "CBD3", "5500" +
                 ".00", "www.jobsforjuniors3.com");
-        List<OfferGetResponseDto> allOffers = offerFacade.getAllOffers();
+        List<OfferGetResponseDto> allOffers = offerFacade.fetchAllUniqueOfferFromForeignAPI();
         //when
         OfferGetResponseDto oneOfferById = offerFacade.findOfferById(linkToOffer);
         //then

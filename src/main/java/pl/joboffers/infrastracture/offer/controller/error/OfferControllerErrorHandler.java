@@ -23,7 +23,7 @@ public class OfferControllerErrorHandler {
 
     @ExceptionHandler(DuplicateKeyException.class)
     @ResponseBody
-    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseStatus(HttpStatus.CONFLICT)
     public OfferErrorResponseDto handleOfferDuplicatedException(DuplicateKeyException e) {
         log.error(e.getMessage());
         return new OfferErrorResponseDto(e.getMessage(), HttpStatus.NOT_FOUND);

@@ -25,11 +25,11 @@ public class OfferRestController {
         return ResponseEntity.ok(allOffers);
     }
 
-   /* @GetMapping("/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<OfferGetResponseDto> getOfferById(@PathVariable String id) {
         OfferGetResponseDto offerById = offerFacade.findOfferById(id);
         return ResponseEntity.ok(offerById);
-    }*/
+    }
 
     @PostMapping
     public ResponseEntity<OfferPostResponseDto> postOffer(@RequestBody @Valid OfferPostRequestDto offer) {

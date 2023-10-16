@@ -11,7 +11,7 @@ public class OfferResponseClientImpl implements OfferResponseClient {
     OfferFacadeRepository repositoryForTest;
 
 /*    @Override
-    public List<OfferGetResponseDto> getAllOffers() {
+    public List<OfferGetResponseDto> fetchAllUniqueOfferFromForeignAPI() {
         List<OfferGetResponseDto> offerGetResponseDtos =
                 List.of(
                         new OfferGetResponseDto("1",
@@ -37,7 +37,7 @@ public class OfferResponseClientImpl implements OfferResponseClient {
     }*/
 
     @Override
-    public List<OfferGetResponseDto> getAllOffers() {
+    public List<OfferGetResponseDto> fetchAllUniqueOfferFromForeignAPI() {
         return null;
     }
 }

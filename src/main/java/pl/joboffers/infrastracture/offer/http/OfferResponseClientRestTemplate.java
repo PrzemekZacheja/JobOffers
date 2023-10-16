@@ -21,9 +21,9 @@ public class OfferResponseClientRestTemplate implements OfferResponseClient {
     private final int ports;
 
     @Override
-    public List<OfferGetResponseDto> getAllOffers() {
+    public List<OfferGetResponseDto> fetchAllUniqueOfferFromForeignAPI() {
         String url = UriComponentsBuilder.fromHttpUrl(getUrlForService())
-                .toUriString();
+                                         .toUriString();
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<HttpHeaders> requestEntity = new HttpEntity<>(headers);
         ResponseEntity<List<OfferGetResponseDto>> responseEntity = restTemplate.exchange(
@@ -33,6 +33,7 @@ public class OfferResponseClientRestTemplate implements OfferResponseClient {
                 new ParameterizedTypeReference<>() {
                 }
         );
+
         return responseEntity.getBody();
     }
 

@@ -5,7 +5,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.FluentQuery;
-import pl.joboffers.domain.offer.dto.OfferGetResponseDto;
 
 import java.util.List;
 import java.util.Map;
@@ -147,7 +146,7 @@ public class OfferFacadeRepositoryForTest implements OfferFacadeRepository {
     }
 
     @Override
-    public List<OfferGetResponseDto> findAllBy() {
-        return null;
+    public boolean existsByOfferUrl(String offerUrl) {
+        return databaseInMemory.containsKey(offerUrl);
     }
 }
