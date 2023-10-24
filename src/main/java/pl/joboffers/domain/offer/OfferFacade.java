@@ -16,22 +16,22 @@ public class OfferFacade {
     private final OfferResponseClient client;
     private final OfferFacadeRepository repository;
 
+    private void fetchUniqueOfferToDb() {
+        List<OfferGetResponseDto> offerGetResponseDtos = client.fetchAllUniqueOfferFromForeignAPI();
+        List<Offer> newUniqueOffer =
+                offerGetResponseDtos.stream()
+                                    .map(MapperOfferResponse::mapToOffer)
+                                    .toList();
+        log.info("save " + newUniqueOffer.size() + " offers");
+        repository.saveAll(newUniqueOffer);
+    }
+
     public List<OfferGetResponseDto> getAllOffers() {
-        fetchUniqeOfferToDb();
+        fetchUniqueOfferToDb();
         return repository.findAll()
                          .stream()
                          .map(MapperOfferResponse::mapToOfferGetResponseDto)
                          .collect(Collectors.toList());
-    }
-
-    private void fetchUniqeOfferToDb() {
-        List<OfferGetResponseDto> offerGetResponseDtos = client.fetchAllUniqueOfferFromForeignAPI();
-        List<Offer> newUniqueOffer =
-                offerGetResponseDtos.stream()
-                                    .filter(offerGetResponseDto -> repository.existsByOfferUrl(offerGetResponseDto.offerUrl()))
-                                    .map(MapperOfferResponse::mapToOffer)
-                                    .toList();
-        repository.saveAll(newUniqueOffer);
     }
 
     public OfferPostResponseDto addManualJobOffer(OfferPostRequestDto offerRequestDto) {
@@ -42,7 +42,7 @@ public class OfferFacade {
                            .salary(offerRequestDto.salary())
                            .build();
         Offer offerSaved = repository.save(offer);
-        log.info("offer save");
+        log.info("offer by url " + offer.offerUrl() + " saved to db");
         return MapperOfferResponse.mapToOfferPostResponseDto(offerSaved);
     }
 
@@ -51,5 +51,10 @@ public class OfferFacade {
                 repository.findById(id)
                           .orElseThrow(() -> new NoOfferInDBException("Not found for id: " + id));
         return MapperOfferResponse.mapToOfferGetResponseDto(offerById);
+    }
+
+    public OfferGetResponseDto findByOfferUrl(String offerUrl) {
+        Offer offerByUrl = repository.findByOfferUrl(offerUrl);
+        return MapperOfferResponse.mapToOfferGetResponseDto(offerByUrl);
     }
 }

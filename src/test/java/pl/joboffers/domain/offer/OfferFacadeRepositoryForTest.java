@@ -1,5 +1,6 @@
 package pl.joboffers.domain.offer;
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,18 +20,12 @@ public class OfferFacadeRepositoryForTest implements OfferFacadeRepository {
 
     @Override
     public <S extends Offer> S save(final S entity) {
-        databaseInMemory.put(entity.offerUrl(), entity);
+        if (!databaseInMemory.containsValue(entity.offerUrl())) {
+            databaseInMemory.put(entity.offerUrl(), entity);
+        } else {
+            throw new DuplicateKeyException(String.format("Offer with key %s already exist", entity.offerUrl()));
+        }
         return entity;
-    }
-
-
-    public Optional<Offer> findOfferByLinkToOffer(String linkToOffer) {
-        return Optional.ofNullable(databaseInMemory.values()
-                .stream()
-                                                   .filter(offerResponseObject -> offerResponseObject.offerUrl()
-                                                                  .equals(linkToOffer))
-                .findAny()
-                .orElseThrow(() -> new NoOfferInDBException("No offer in DB")));
     }
 
 
@@ -47,7 +42,9 @@ public class OfferFacadeRepositoryForTest implements OfferFacadeRepository {
 
     @Override
     public List<Offer> findAll() {
-        return null;
+        return databaseInMemory.values()
+                               .stream()
+                               .toList();
     }
 
     @Override
@@ -82,7 +79,8 @@ public class OfferFacadeRepositoryForTest implements OfferFacadeRepository {
 
     @Override
     public Optional<Offer> findById(String s) {
-        return Optional.empty();
+        Offer offer = databaseInMemory.get(s);
+        return Optional.ofNullable(offer);
     }
 
     @Override
@@ -143,6 +141,11 @@ public class OfferFacadeRepositoryForTest implements OfferFacadeRepository {
     @Override
     public <S extends Offer, R> R findBy(Example<S> example, Function<FluentQuery.FetchableFluentQuery<S>, R> queryFunction) {
         return null;
+    }
+
+    @Override
+    public Offer findByOfferUrl(String offerUrl) {
+        return databaseInMemory.get(offerUrl);
     }
 
     @Override

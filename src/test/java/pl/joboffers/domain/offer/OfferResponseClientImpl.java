@@ -4,13 +4,14 @@ import lombok.AllArgsConstructor;
 import pl.joboffers.domain.offer.dto.OfferGetResponseDto;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 public class OfferResponseClientImpl implements OfferResponseClient {
 
     OfferFacadeRepository repositoryForTest;
 
-/*    @Override
+    @Override
     public List<OfferGetResponseDto> fetchAllUniqueOfferFromForeignAPI() {
         List<OfferGetResponseDto> offerGetResponseDtos =
                 List.of(
@@ -29,15 +30,11 @@ public class OfferResponseClientImpl implements OfferResponseClient {
                                                 "CBD3",
                                                 "5500.00",
                                                 "www.jobsforjuniors3.com"));
-        offerGetResponseDtos.forEach(dto -> repositoryForTest.save(MapperOfferResponse.mapToOfferResponse(dto)));
+        offerGetResponseDtos.forEach(dto -> repositoryForTest.save(MapperOfferResponse.mapToOffer(dto)));
         return repositoryForTest.findAll()
-                .stream()
+                                .stream()
                                 .map(MapperOfferResponse::mapToOfferGetResponseDto)
-                .collect(Collectors.toList());
-    }*/
-
-    @Override
-    public List<OfferGetResponseDto> fetchAllUniqueOfferFromForeignAPI() {
-        return null;
+                                .collect(Collectors.toList());
     }
+
 }

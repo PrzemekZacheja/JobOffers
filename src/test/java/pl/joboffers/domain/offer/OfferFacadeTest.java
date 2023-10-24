@@ -1,16 +1,25 @@
 package pl.joboffers.domain.offer;
 
+import org.junit.jupiter.api.Test;
+import pl.joboffers.domain.offer.dto.OfferGetResponseDto;
+import pl.joboffers.domain.offer.dto.OfferPostRequestDto;
+import pl.joboffers.domain.offer.dto.OfferPostResponseDto;
+
+import java.util.List;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
 class OfferFacadeTest {
 
- /*   OfferFacadeRepository repositoryForTest = new OfferFacadeRepositoryForTest();
+    OfferFacadeRepository repositoryForTest = new OfferFacadeRepositoryForTest();
     OfferFacade offerFacade = new OfferFacade(
             new OfferResponseClientImpl(repositoryForTest),
-            repositoryForTest,
-            new HashGenerator());
+            repositoryForTest
+    );
 
     @Test
     void should_return_dto_object() {
-        assertThat(offerFacade.fetchAllUniqueOfferFromForeignAPI()
+        assertThat(offerFacade.getAllOffers()
                               .get(0)).isInstanceOf(OfferGetResponseDto.class);
     }
 
@@ -18,7 +27,7 @@ class OfferFacadeTest {
     void should_return_list_of_3_object_from_client() {
         //given
         //when
-        List<OfferGetResponseDto> allOffers = offerFacade.fetchAllUniqueOfferFromForeignAPI();
+        List<OfferGetResponseDto> allOffers = offerFacade.getAllOffers();
         //then
         assertThat(allOffers.size()).isEqualTo(3);
     }
@@ -28,11 +37,10 @@ class OfferFacadeTest {
         //given
         String link = "www.jobsforjuniors1.com";
         //when
-        List<OfferGetResponseDto> allOffers = offerFacade.fetchAllUniqueOfferFromForeignAPI();
+        List<OfferGetResponseDto> allOffers = offerFacade.getAllOffers();
         //then
-        OfferResponse byLinkAsId =
-                repositoryForTest.findOfferByLinkToOffer(link)
-                        .orElseThrow(() -> new NoOfferInDBException("No Offer"));
+        Offer byLinkAsId =
+                repositoryForTest.findByOfferUrl(link);
         assertThat(allOffers.get(0)).isEqualTo(MapperOfferResponse.mapToOfferGetResponseDto(byLinkAsId));
     }
 
@@ -43,14 +51,11 @@ class OfferFacadeTest {
         String nameOfPosition = "Junior1";
         String nameOfCompany = "CBD1";
         String salary = "3500.00";
+        OfferPostRequestDto requestDto = new OfferPostRequestDto(nameOfPosition, nameOfCompany, salary, link);
         //when
-        OfferPostResponseDto offerSavedManually = offerFacade.addManualJobOffer(link,
-                                                                                nameOfPosition,
-                                                                                nameOfCompany,
-                                                                                salary);
-        OfferResponse byLinkAsId =
-                repositoryForTest.findOfferByLinkToOffer("www.jobsforjuniors1.com")
-                        .orElseThrow(() -> new NoOfferInDBException("No offer"));
+        OfferPostResponseDto offerSavedManually = offerFacade.addManualJobOffer(requestDto);
+        Offer byLinkAsId =
+                repositoryForTest.findByOfferUrl("www.jobsforjuniors1.com");
         //then
         assertThat(offerSavedManually).isEqualTo(MapperOfferResponse.mapToOfferPostResponseDto(byLinkAsId));
     }
@@ -63,22 +68,22 @@ class OfferFacadeTest {
         OfferGetResponseDto offerGetResponseDto2 = new OfferGetResponseDto(null, "Junior1", "CBD1", "3500" +
                 ".00", "www.jobsforjuniors1.com");
         //when
-        repositoryForTest.save(MapperOfferResponse.mapToOfferResponse(offerGetResponseDto1));
-        repositoryForTest.save(MapperOfferResponse.mapToOfferResponse(offerGetResponseDto2));
+        repositoryForTest.save(MapperOfferResponse.mapToOffer(offerGetResponseDto1));
+        repositoryForTest.save(MapperOfferResponse.mapToOffer(offerGetResponseDto2));
         //then
-        List<OfferResponse> allOffersFromRepository = repositoryForTest.findAll();
+        List<Offer> allOffersFromRepository = repositoryForTest.findAll();
         assertThat(allOffersFromRepository.size()).isEqualTo(1);
     }
 
     @Test
     void should_return_correct_object_find_by_link_to_offer() {
         //given
-        String linkToOffer = "www.jobsforjuniors3.com";
+        String offerUrl = "www.jobsforjuniors3.com";
         OfferGetResponseDto expected = new OfferGetResponseDto("3", "Junior3", "CBD3", "5500" +
                 ".00", "www.jobsforjuniors3.com");
-        List<OfferGetResponseDto> allOffers = offerFacade.fetchAllUniqueOfferFromForeignAPI();
+        List<OfferGetResponseDto> allOffers = offerFacade.getAllOffers();
         //when
-        OfferGetResponseDto oneOfferById = offerFacade.findOfferById(linkToOffer);
+        OfferGetResponseDto oneOfferById = offerFacade.findByOfferUrl(offerUrl);
         //then
         assertThat(oneOfferById).isEqualTo(expected);
     }
@@ -90,18 +95,12 @@ class OfferFacadeTest {
         String nameOfPosition = "Junior1";
         String nameOfCompany = "CBD1";
         String salary = "3500.00";
+        OfferPostRequestDto requestDto = new OfferPostRequestDto(nameOfPosition, nameOfCompany, salary, link);
         //when
-        OfferPostResponseDto offerSavedManually1 = offerFacade.addManualJobOffer(link,
-                                                                                 nameOfPosition,
-                                                                                 nameOfCompany,
-                                                                                 salary);
-        OfferPostResponseDto offerSavedManually2 = offerFacade.addManualJobOffer(link,
-                                                                                 nameOfPosition,
-                                                                                 nameOfCompany,
-                                                                                 salary);
-        List<OfferGetResponseDto> allOffersFromRepository = offerFacade.getAllOffersFromRepository();
-
+        OfferPostResponseDto offerSavedManually1 = offerFacade.addManualJobOffer(requestDto);
+        OfferPostResponseDto offerSavedManually2 = offerFacade.addManualJobOffer(requestDto);
         //then
-        assertThat(allOffersFromRepository.size()).isEqualTo(1);
-    }*/
+        assertThat(repositoryForTest.findAll()
+                                    .size()).isEqualTo(1);
+    }
 }
