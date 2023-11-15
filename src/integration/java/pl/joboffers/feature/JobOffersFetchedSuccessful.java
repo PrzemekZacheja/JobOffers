@@ -49,7 +49,7 @@ class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJo
 
 //    step 2: scheduler ran 1st time and made GET to external server and system added 0 offers to database
         //given & when
-        List<OfferGetResponseDto> savedOffers = scheduler.scheduleGetAllOffers();
+        List<OfferGetResponseDto> savedOffers = scheduler.scheduleFetchAllOffers();
         //then
         assertThat(savedOffers).isEmpty();
 
@@ -86,31 +86,25 @@ class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJo
 
 //    step 9: scheduler ran 2nd time and made GET to external server and system added 2 new offers with ids: 1000 and 2000 to database
         //given & when
-        savedOffers = scheduler.scheduleGetAllOffers();
+        savedOffers = scheduler.scheduleFetchAllOffers();
         //then
         assertThat(savedOffers).size()
                                .isEqualTo(2);
 
 
-//    step 10: user made GET /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) with 2 offers with ids: 1000 and 2000
+//    step 10: user made GET /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) with 2 offers
         //given & when
         ResultActions performForTwoOffers = mockMvc.perform(get(urlTemplate).contentType(MediaType.APPLICATION_JSON_VALUE));
         MvcResult mvcResultForTwoOffers = performForTwoOffers.andExpect(status().isOk())
                                                              .andReturn();
         String contentOFTwoOffers = mvcResultForTwoOffers.getResponse()
                                                          .getContentAsString();
-        List<OfferGetResponseDto> offerGetResponseDtos = objectMapper.readValue(contentOFTwoOffers,
+        List<OfferGetResponseDto> offerGetResponseDtosForStepTen = objectMapper.readValue(contentOFTwoOffers,
                                                                                 new TypeReference<>() {
                                                                                 });
         //then
-        assertThat(offerGetResponseDtos).size()
+        assertThat(offerGetResponseDtosForStepTen).size()
                                         .isEqualTo(2);
-        OfferGetResponseDto firstOffer = offerGetResponseDtos.get(0);
-        OfferGetResponseDto secondOffer = offerGetResponseDtos.get(1);
-        assertAll(() -> assertThat(firstOffer.id())
-                          .isEqualTo(1000),
-                  () -> assertThat(secondOffer.id())
-                          .isEqualTo(2000));
 
 
 //    step 11: user made GET /offers/9999 and system returned NOT_FOUND(404) with message “Offer with id 9999 not found”
@@ -131,21 +125,19 @@ class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJo
 
 //    step 12: user made GET /offers/1000 and system returned OK(200) with offer
         //given
-        urlTemplate = "/offers/1000";
+        OfferGetResponseDto firstOffer = offerGetResponseDtosForStepTen.get(0);
+        String id = firstOffer.id();
+        urlTemplate = "/offers/" + id;
         //when
         ResultActions performGetOfferWithExistingId = mockMvc.perform(
                 get(urlTemplate).contentType(MediaType.APPLICATION_JSON_VALUE));
         //then
-        performGetOfferWithExistingId.andExpect(status().isOk())
-                                     .andExpect(content().json("""
-                                                                       {
-                                                                       "id": 1000,
-                                                                       "title": "string Title",
-                                                                       "company": "string Company",
-                                                                       "salary": "string Salary",
-                                                                       "offerUrl": "string OfferURL"
-                                                                       }
-                                                                       """.trim()));
+        performGetOfferWithExistingId.andExpect(status().isOk());
+        String contentOFOffer = performGetOfferWithExistingId.andReturn()
+                                                             .getResponse()
+                                                             .getContentAsString();
+        OfferGetResponseDto offerGetResponseDtoForStepTwelve = objectMapper.readValue(contentOFOffer, OfferGetResponseDto.class);
+        assertThat(offerGetResponseDtoForStepTwelve).isEqualTo(firstOffer);
 
 
 //    step 13: there are 2 new offers in external HTTP server
@@ -156,6 +148,7 @@ class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJo
                                                            .withHeader("Content-Type", "application/json")
                                                            .withBody(bodyWithFourOffersJson())));
         //when
+        scheduler.scheduleFetchAllOffers();
         List<OfferGetResponseDto> offers = offerFacade.getAllOffers();
         //then
         assertThat(offers).size()
@@ -164,7 +157,7 @@ class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJo
 
 //    step 14: scheduler ran 3rd time and made GET to external server and system added 2 new offers with ids: 3000 and 4000 to database
         //given & when
-        savedOffers = scheduler.scheduleGetAllOffers();
+        savedOffers = scheduler.scheduleFetchAllOffers();
         //then
         assertThat(savedOffers).size()
                                .isEqualTo(2);

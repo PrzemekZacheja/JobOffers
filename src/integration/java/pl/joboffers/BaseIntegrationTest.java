@@ -25,16 +25,16 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 public class BaseIntegrationTest {
 
     public static final String WIRE_MOCK_HOST = "http://localhost";
-    @Container
-    public static final MongoDBContainer mongoDBContainer = new MongoDBContainer(DockerImageName.parse("mongo:4.0.10"));
     @RegisterExtension
     public static WireMockExtension wireMockServer = WireMockExtension.newInstance()
-            .options(wireMockConfig().dynamicPort())
-            .build();
+                                                                      .options(wireMockConfig().dynamicPort())
+                                                                      .build();
     @Autowired
     public MockMvc mockMvc;
     @Autowired
     public ObjectMapper objectMapper;
+    @Container
+    public static final MongoDBContainer mongoDBContainer = new MongoDBContainer(DockerImageName.parse("mongo:4.0.10"));
 
     @DynamicPropertySource
     public static void propertyOverride(DynamicPropertyRegistry registry) {

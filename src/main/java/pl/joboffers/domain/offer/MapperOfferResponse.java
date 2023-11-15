@@ -3,6 +3,8 @@ package pl.joboffers.domain.offer;
 import pl.joboffers.domain.offer.dto.OfferGetResponseDto;
 import pl.joboffers.domain.offer.dto.OfferPostResponseDto;
 
+import java.util.List;
+
 public class MapperOfferResponse {
 
     public static OfferPostResponseDto mapToOfferPostResponseDto(Offer offer) {
@@ -34,5 +36,11 @@ public class MapperOfferResponse {
                     .salary(responseDto.salary())
                     .offerUrl(responseDto.offerUrl())
                     .build();
+    }
+
+    public static List<OfferGetResponseDto> mapToOfferGetResponseDto(List<Offer> allOffers) {
+        return allOffers.stream()
+                        .map(MapperOfferResponse::mapToOfferGetResponseDto)
+                        .toList();
     }
 }

@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import pl.joboffers.domain.offer.NoOfferInDBException;
-import pl.joboffers.domain.offer.OfferAlreadyExistException;
 
 
 @ControllerAdvice
@@ -17,17 +16,9 @@ public class OfferControllerErrorHandler {
     @ExceptionHandler(NoOfferInDBException.class)
     @ResponseBody
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String handleOfferNotFoundException(NoOfferInDBException e) {
+    public OfferErrorResponseDto handleOfferNotFoundException(NoOfferInDBException e) {
         log.error(e.getMessage());
-        return e.getMessage();
-    }
-
-    @ExceptionHandler(OfferAlreadyExistException.class)
-    @ResponseBody
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String handleOfferNotFoundException(OfferAlreadyExistException e) {
-        log.error(e.getMessage());
-        return e.getMessage();
+        return new OfferErrorResponseDto(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(org.springframework.dao.DuplicateKeyException.class)

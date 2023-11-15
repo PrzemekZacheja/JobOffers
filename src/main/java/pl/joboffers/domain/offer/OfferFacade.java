@@ -2,6 +2,7 @@ package pl.joboffers.domain.offer;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.dao.DuplicateKeyException;
 import pl.joboffers.domain.offer.dto.OfferGetResponseDto;
 import pl.joboffers.domain.offer.dto.OfferPostRequestDto;
 import pl.joboffers.domain.offer.dto.OfferPostResponseDto;
@@ -17,19 +18,18 @@ public class OfferFacade {
     private final OfferFacadeRepository repository;
 
     public List<OfferGetResponseDto> getAllOffers() {
-        List<Offer> offers = fetchUniqueOfferToDb();
         return repository.findAll()
                          .stream()
                          .map(MapperOfferResponse::mapToOfferGetResponseDto)
                          .collect(Collectors.toList());
     }
 
-    private List<Offer> fetchUniqueOfferToDb() {
+    public List<Offer> fetchUniqueOfferToDb() {
         List<OfferGetResponseDto> offerGetResponseDtos = client.fetchAllOfferFromForeignAPI();
         List<Offer> offerList = offerGetResponseDtos.stream()
                                                     .map(MapperOfferResponse::mapToOffer)
                                                     .toList();
-        log.info("save " + offerList.size() + " offers");
+        log.info("Try to save " + offerList.size() + " offers");
         return saveUniqueOffers(offerList, repository);
     }
 
@@ -55,7 +55,9 @@ public class OfferFacade {
             log.info("offer by url " + offer.offerUrl() + " saved to db");
             return MapperOfferResponse.mapToOfferPostResponseDto(offerSaved);
         } else {
-            throw new OfferAlreadyExistException("Offer with url " + offer.offerUrl() + " already exist");
+            String message = "offer by url " + offer.offerUrl() + " already exist in db";
+            log.error(message);
+            throw new DuplicateKeyException(message);
         }
     }
 
