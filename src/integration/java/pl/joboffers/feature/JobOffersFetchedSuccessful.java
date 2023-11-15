@@ -90,6 +90,13 @@ class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJo
 
 
 //    step 9: scheduler ran 2nd time and made GET to external server and system added 2 new offers with ids: 1000 and 2000 to database
+        //given & when
+        savedOffers = scheduler.scheduleGetAllOffers();
+        //then
+        assertThat(savedOffers).size()
+                               .isEqualTo(2);
+
+
 //    step 10: user made GET /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) with 2 offers with ids: 1000 and 2000
 
 

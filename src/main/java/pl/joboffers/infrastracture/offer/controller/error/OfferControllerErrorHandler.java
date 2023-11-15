@@ -1,7 +1,6 @@
 package pl.joboffers.infrastracture.offer.controller.error;
 
 import lombok.extern.log4j.Log4j2;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -22,10 +21,10 @@ public class OfferControllerErrorHandler {
         return new OfferErrorResponseDto(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(DuplicateKeyException.class)
+    @ExceptionHandler(org.springframework.dao.DuplicateKeyException.class)
     @ResponseBody
     @ResponseStatus(HttpStatus.CONFLICT)
-    public OfferErrorResponseDto handleOfferDuplicatedException(DuplicateKeyException e) {
+    public OfferErrorResponseDto handleOfferDuplicatedException(org.springframework.dao.DuplicateKeyException e) {
         String message = "Offer already exist";
         log.warn(message);
         return new OfferErrorResponseDto(message, HttpStatus.CONFLICT);

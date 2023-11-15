@@ -16,6 +16,14 @@ public class OfferFacade {
     private final OfferResponseClient client;
     private final OfferFacadeRepository repository;
 
+    public List<OfferGetResponseDto> getAllOffers() {
+        fetchUniqueOfferToDb();
+        return repository.findAll()
+                         .stream()
+                         .map(MapperOfferResponse::mapToOfferGetResponseDto)
+                         .collect(Collectors.toList());
+    }
+
     private void fetchUniqueOfferToDb() {
         List<OfferGetResponseDto> offerGetResponseDtos = client.fetchAllUniqueOfferFromForeignAPI();
         List<Offer> newUniqueOffer =
@@ -24,14 +32,6 @@ public class OfferFacade {
                                     .toList();
         log.info("save " + newUniqueOffer.size() + " offers");
         repository.saveAll(newUniqueOffer);
-    }
-
-    public List<OfferGetResponseDto> getAllOffers() {
-        fetchUniqueOfferToDb();
-        return repository.findAll()
-                         .stream()
-                         .map(MapperOfferResponse::mapToOfferGetResponseDto)
-                         .collect(Collectors.toList());
     }
 
     public OfferPostResponseDto addManualJobOffer(OfferPostRequestDto offerRequestDto) {
