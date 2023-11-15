@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface OfferResponseClient {
 
-    List<OfferGetResponseDto> fetchAllUniqueOfferFromForeignAPI();
+    List<OfferGetResponseDto> fetchAllOfferFromForeignAPI();
 }
