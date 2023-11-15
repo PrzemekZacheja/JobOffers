@@ -1,5 +1,6 @@
 package pl.joboffers.domain.offer;
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,23 +15,17 @@ import java.util.function.Function;
 
 public class OfferFacadeRepositoryForTest implements OfferFacadeRepository {
 
-    Map<String, OfferResponseObject> databaseInMemory = new ConcurrentHashMap<>();
+    Map<String, Offer> databaseInMemory = new ConcurrentHashMap<>();
 
 
     @Override
-    public <S extends OfferResponseObject> S save(final S entity) {
-        databaseInMemory.put(entity.linkToOffer(), entity);
+    public <S extends Offer> S save(final S entity) {
+        if (!databaseInMemory.containsValue(entity.offerUrl())) {
+            databaseInMemory.put(entity.offerUrl(), entity);
+        } else {
+            throw new DuplicateKeyException(String.format("Offer with key %s already exist", entity.offerUrl()));
+        }
         return entity;
-    }
-
-
-    public Optional<OfferResponseObject> findOfferById(String id) {
-        return Optional.ofNullable(databaseInMemory.values()
-                .stream()
-                .filter(offerResponseObject -> offerResponseObject.linkToOffer()
-                                                                  .equals(id))
-                .findAny()
-                .orElseThrow(() -> new NoOfferInDBException("No offer in DB")));
     }
 
 
@@ -39,35 +34,57 @@ public class OfferFacadeRepositoryForTest implements OfferFacadeRepository {
         return false;
     }
 
+
     @Override
-    public <S extends OfferResponseObject> List<S> saveAll(final Iterable<S> entities) {
+    public <S extends Offer> List<S> saveAll(Iterable<S> entities) {
         return null;
     }
 
     @Override
-    public Optional<OfferResponseObject> findById(final String s) {
-        return Optional.empty();
-    }
-
-    @Override
-    public List<OfferResponseObject> findAll() {
+    public List<Offer> findAll() {
         return databaseInMemory.values()
-                .stream()
-                .toList();
+                               .stream()
+                               .toList();
     }
 
     @Override
-    public Iterable<OfferResponseObject> findAllById(final Iterable<String> strings) {
+    public List<Offer> findAll(Sort sort) {
         return null;
     }
 
     @Override
-    public List<OfferResponseObject> findAll(final Sort sort) {
+    public <S extends Offer> S insert(S entity) {
         return null;
     }
 
     @Override
-    public Page<OfferResponseObject> findAll(final Pageable pageable) {
+    public <S extends Offer> List<S> insert(Iterable<S> entities) {
+        return null;
+    }
+
+    @Override
+    public <S extends Offer> List<S> findAll(Example<S> example) {
+        return null;
+    }
+
+    @Override
+    public <S extends Offer> List<S> findAll(Example<S> example, Sort sort) {
+        return null;
+    }
+
+    @Override
+    public Page<Offer> findAll(Pageable pageable) {
+        return null;
+    }
+
+    @Override
+    public Optional<Offer> findById(String s) {
+        Offer offer = databaseInMemory.get(s);
+        return Optional.ofNullable(offer);
+    }
+
+    @Override
+    public Iterable<Offer> findAllById(Iterable<String> strings) {
         return null;
     }
 
@@ -77,75 +94,62 @@ public class OfferFacadeRepositoryForTest implements OfferFacadeRepository {
     }
 
     @Override
-    public void deleteById(final String s) {
+    public void deleteById(String s) {
 
     }
 
     @Override
-    public void delete(final OfferResponseObject entity) {
+    public void delete(Offer entity) {
 
     }
 
     @Override
-    public void deleteAllById(final Iterable<? extends String> strings) {
+    public void deleteAllById(Iterable<? extends String> strings) {
 
     }
 
     @Override
-    public void deleteAll(final Iterable<? extends OfferResponseObject> entities) {
+    public void deleteAll(Iterable<? extends Offer> entities) {
 
     }
-
 
     @Override
     public void deleteAll() {
 
     }
 
-
     @Override
-    public <S extends OfferResponseObject> S insert(final S entity) {
-        return null;
-    }
-
-    @Override
-    public <S extends OfferResponseObject> List<S> insert(final Iterable<S> entities) {
-        return null;
-    }
-
-    @Override
-    public <S extends OfferResponseObject> Optional<S> findOne(final Example<S> example) {
+    public <S extends Offer> Optional<S> findOne(Example<S> example) {
         return Optional.empty();
     }
 
     @Override
-    public <S extends OfferResponseObject> List<S> findAll(final Example<S> example) {
+    public <S extends Offer> Page<S> findAll(Example<S> example, Pageable pageable) {
         return null;
     }
 
     @Override
-    public <S extends OfferResponseObject> List<S> findAll(final Example<S> example, final Sort sort) {
-        return null;
-    }
-
-    @Override
-    public <S extends OfferResponseObject> Page<S> findAll(final Example<S> example, final Pageable pageable) {
-        return null;
-    }
-
-    @Override
-    public <S extends OfferResponseObject> long count(final Example<S> example) {
+    public <S extends Offer> long count(Example<S> example) {
         return 0;
     }
 
     @Override
-    public <S extends OfferResponseObject> boolean exists(final Example<S> example) {
+    public <S extends Offer> boolean exists(Example<S> example) {
         return false;
     }
 
     @Override
-    public <S extends OfferResponseObject, R> R findBy(final Example<S> example,
-                                                       final Function<FluentQuery.FetchableFluentQuery<S>, R> queryFunction) {
+    public <S extends Offer, R> R findBy(Example<S> example, Function<FluentQuery.FetchableFluentQuery<S>, R> queryFunction) {
         return null;
+    }
+
+    @Override
+    public Offer findByOfferUrl(String offerUrl) {
+        return databaseInMemory.get(offerUrl);
+    }
+
+    @Override
+    public boolean existsByOfferUrl(String offerUrl) {
+        return databaseInMemory.containsKey(offerUrl);
     }
 }

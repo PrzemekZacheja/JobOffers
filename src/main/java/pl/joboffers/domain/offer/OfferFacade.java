@@ -1,52 +1,60 @@
 package pl.joboffers.domain.offer;
 
 import lombok.AllArgsConstructor;
-import pl.joboffers.domain.offer.dto.OfferResponseObjectDto;
+import lombok.extern.log4j.Log4j2;
+import pl.joboffers.domain.offer.dto.OfferGetResponseDto;
+import pl.joboffers.domain.offer.dto.OfferPostRequestDto;
+import pl.joboffers.domain.offer.dto.OfferPostResponseDto;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
+@Log4j2
 public class OfferFacade {
 
     private final OfferResponseClient client;
     private final OfferFacadeRepository repository;
-    private final HashGenerator hashGenerator;
 
-    public List<OfferResponseObjectDto> getAllOffers() {
-        List<OfferResponseObjectDto> allOffers = client.getAllOffers();
-        return allOffers.stream()
-                        .map(MapperOfferResponse::mapToOfferResponse)
-                        .map(repository::save)
-                        .map(MapperOfferResponse::mapToOfferResponseDto)
-                        .toList();
+    private void fetchUniqueOfferToDb() {
+        List<OfferGetResponseDto> offerGetResponseDtos = client.fetchAllUniqueOfferFromForeignAPI();
+        List<Offer> newUniqueOffer =
+                offerGetResponseDtos.stream()
+                                    .map(MapperOfferResponse::mapToOffer)
+                                    .toList();
+        log.info("save " + newUniqueOffer.size() + " offers");
+        repository.saveAll(newUniqueOffer);
     }
 
-    public OfferResponseObjectDto addManualJobOffer(String linkToOffer,
-                                                    String nameOfPosition,
-                                                    String nameOfCompany,
-                                                    String salary) {
-        OfferResponseObject offerResponseObject = OfferResponseObject.builder()
-                                                                     .id(hashGenerator.getHash())
-                                                                     .linkToOffer(linkToOffer)
-                                                                     .nameOfPosition(nameOfPosition)
-                                                                     .nameOfCompany(nameOfCompany)
-                                                                     .salary(salary)
-                                                                     .build();
-        repository.save(offerResponseObject);
-        return MapperOfferResponse.mapToOfferResponseDto(offerResponseObject);
+    public List<OfferGetResponseDto> getAllOffers() {
+        fetchUniqueOfferToDb();
+        return repository.findAll()
+                         .stream()
+                         .map(MapperOfferResponse::mapToOfferGetResponseDto)
+                         .collect(Collectors.toList());
     }
 
-    public List<OfferResponseObjectDto> getAllOffersFromRepository() {
-        List<OfferResponseObject> allOffersFromRepository = repository.findAll();
-        return allOffersFromRepository.stream()
-                                      .map(MapperOfferResponse::mapToOfferResponseDto)
-                                      .toList();
+    public OfferPostResponseDto addManualJobOffer(OfferPostRequestDto offerRequestDto) {
+        Offer offer = Offer.builder()
+                           .offerUrl(offerRequestDto.offerUrl())
+                           .title(offerRequestDto.title())
+                           .company(offerRequestDto.company())
+                           .salary(offerRequestDto.salary())
+                           .build();
+        Offer offerSaved = repository.save(offer);
+        log.info("offer by url " + offer.offerUrl() + " saved to db");
+        return MapperOfferResponse.mapToOfferPostResponseDto(offerSaved);
     }
 
-    public OfferResponseObjectDto findOfferById(String id) {
-        OfferResponseObject offerById =
-                repository.findOfferById(id)
+    public OfferGetResponseDto findOfferById(String id) {
+        Offer offerById =
+                repository.findById(id)
                           .orElseThrow(() -> new NoOfferInDBException("Not found for id: " + id));
-        return MapperOfferResponse.mapToOfferResponseDto(offerById);
+        return MapperOfferResponse.mapToOfferGetResponseDto(offerById);
+    }
+
+    public OfferGetResponseDto findByOfferUrl(String offerUrl) {
+        Offer offerByUrl = repository.findByOfferUrl(offerUrl);
+        return MapperOfferResponse.mapToOfferGetResponseDto(offerByUrl);
     }
 }

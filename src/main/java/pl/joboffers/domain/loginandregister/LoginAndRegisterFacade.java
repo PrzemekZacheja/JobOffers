@@ -6,7 +6,7 @@ import pl.joboffers.domain.loginandregister.dto.UserDto;
 @AllArgsConstructor
 public class LoginAndRegisterFacade {
 
-    LoginAndRegisterFacadeRepository repository;
+    private final LoginAndRegisterFacadeRepository repository;
 
     public UserDto registerUser(String email, String password) {
         boolean savedInRepository = isSavedInRepository(email);

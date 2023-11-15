@@ -3,10 +3,12 @@ package pl.joboffers.domain.offer;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
-
 @Repository
-public interface OfferFacadeRepository extends MongoRepository<OfferResponseObject, String> {
+public interface OfferFacadeRepository extends MongoRepository<Offer, String> {
 
-    Optional<OfferResponseObject> findOfferById(String id);
+
+    Offer findByOfferUrl(String offerUrl);
+
+    boolean existsByOfferUrl(String offerUrl);
+
 }

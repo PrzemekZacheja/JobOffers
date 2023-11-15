@@ -1,14 +1,15 @@
 package pl.joboffers.infrastracture.offer.controller;
 
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import pl.joboffers.domain.offer.OfferFacade;
-import pl.joboffers.domain.offer.dto.OfferResponseObjectDto;
+import pl.joboffers.domain.offer.dto.OfferGetResponseDto;
+import pl.joboffers.domain.offer.dto.OfferPostRequestDto;
+import pl.joboffers.domain.offer.dto.OfferPostResponseDto;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -19,14 +20,21 @@ public class OfferRestController {
     private final OfferFacade offerFacade;
 
     @GetMapping
-    public ResponseEntity<List<OfferResponseObjectDto>> getAllOffers() {
-        List<OfferResponseObjectDto> allOffers = offerFacade.getAllOffers();
+    public ResponseEntity<List<OfferGetResponseDto>> getAllOffers() {
+        List<OfferGetResponseDto> allOffers = offerFacade.getAllOffers();
         return ResponseEntity.ok(allOffers);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<OfferResponseObjectDto> getOfferById(@PathVariable String id) {
-        OfferResponseObjectDto offerById = offerFacade.findOfferById(id);
+    public ResponseEntity<OfferGetResponseDto> getOfferById(@PathVariable String id) {
+        OfferGetResponseDto offerById = offerFacade.findOfferById(id);
         return ResponseEntity.ok(offerById);
+    }
+
+    @PostMapping
+    public ResponseEntity<OfferPostResponseDto> postOffer(@RequestBody @Valid OfferPostRequestDto offer) {
+        OfferPostResponseDto offerGetResponseObjectDto = offerFacade.addManualJobOffer(offer);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                             .body(offerGetResponseObjectDto);
     }
 }

@@ -5,15 +5,14 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Builder
 @Document
-record OfferResponseObject(
+@Builder
+public record Offer(
         @Id
         String id,
-        @Indexed(unique = true)
-        String linkToOffer,
-        String nameOfPosition,
-        String nameOfCompany,
-        String salary
+        String title,
+        String company,
+        String salary,
+        @Indexed(unique = true) String offerUrl
 ) {
 }
