@@ -98,7 +98,18 @@ class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJo
 
 
 //    step 10: user made GET /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) with 2 offers with ids: 1000 and 2000
-
+        //given & when
+        perform = mockMvc.perform(get(urlTemplate).contentType(MediaType.APPLICATION_JSON_VALUE));
+        mvcResult = perform.andExpect(status().isOk())
+                           .andReturn();
+        contentAsString = mvcResult.getResponse()
+                                   .getContentAsString();
+        List<OfferGetResponseDto> offerGetResponseDtos = objectMapper.readValue(contentAsString,
+                                                                                new TypeReference<>() {
+                                                                                });
+        //then
+        assertThat(offerGetResponseDtos).size()
+                                        .isEqualTo(2);
 
 //    step 11: user made GET /offers/9999 and system returned NOT_FOUND(404) with message “Offer with id 9999 not found”
         //given
@@ -117,9 +128,84 @@ class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJo
 
 
 //    step 12: user made GET /offers/1000 and system returned OK(200) with offer
+        //given
+        urlTemplate = "/offers/1000";
+        //when
+        ResultActions performGetOfferWithExistingId = mockMvc.perform(
+                get(urlTemplate).contentType(MediaType.APPLICATION_JSON_VALUE));
+        //then
+        performGetOfferWithExistingId.andExpect(status().isOk())
+                                     .andExpect(content().json("""
+                                                                       {
+                                                                       "id": 1000,
+                                                                       "title": "string Title",
+                                                                       "company": "string Company",
+                                                                       "salary": "string Salary",
+                                                                       "offerUrl": "string OfferURL"
+                                                                       }
+                                                                       """.trim()));
+
+
 //    step 13: there are 2 new offers in external HTTP server
+        //given
+        wireMockServer.stubFor(WireMock.get("/offers")
+                                       .willReturn(WireMock.aResponse()
+                                                           .withStatus(HttpStatus.OK.value())
+                                                           .withHeader("Content-Type", "application/json")
+                                                           .withBody(bodyWithFourOffersJson())));
+        //when
+        allOffersWithTwoOffers = offerFacade.getAllOffers();
+        //then
+        assertThat(allOffersWithTwoOffers).size()
+                                          .isEqualTo(4);
+
+
 //    step 14: scheduler ran 3rd time and made GET to external server and system added 2 new offers with ids: 3000 and 4000 to database
+        //given & when
+        savedOffers = scheduler.scheduleGetAllOffers();
+        //then
+        assertThat(savedOffers).size()
+                               .isEqualTo(2);
+        assertThat(savedOffers.get(0)
+                              .id()).isEqualTo(3000);
+        assertThat(savedOffers.get(1)
+                              .id()).isEqualTo(4000);
+
+
 //    step 15: user made GET /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) with 4 offers with ids: 1000,2000, 3000 and 4000
+        //given & when
+        perform = mockMvc.perform(get(urlTemplate).contentType(MediaType.APPLICATION_JSON_VALUE));
+        //then
+        perform.andExpect(status().isOk())
+               .andExpect(content().json("""
+                                                 {   "id": 1000,
+                                                     "title": "Junior Java Developer",
+                                                     "company": "BlueSoft Sp. z o.o.",
+                                                     "salary": "7 000 – 9 000 PLN",
+                                                     "offerUrl": "https://nofluffjobs.com/pl/job/junior-java-developer-bluesoft-remote-hfuanrre1"
+                                                 },
+                                                 {
+                                                     "id": 2000,
+                                                     "title": "Java (CMS) Developer",
+                                                     "company": "Efigence SA",
+                                                     "salary": "16 000 – 18 000 PLN",
+                                                     "offerUrl": "https://nofluffjobs.com/pl/job/java-cms-developer-efigence-warszawa-b4qs8loh2"
+                                                 },
+                                                 {
+                                                     "id": 3000,
+                                                     "title": "Junior Java Developer",
+                                                     "company": "Sollers Consulting",
+                                                     "salary": "7 500 – 11 500 PLN",
+                                                     "offerUrl": "https://nofluffjobs.com/pl/job/junior-java-developer-sollers-consulting-warszawa-s6et1ucc3"
+                                                 }
+                                                 {
+                                                     "id": 4000,
+                                                     "title": "Junior Java Developer",
+                                                     "company": "Sollers Consulting",
+                                                     "salary": "7 500 – 11 500 PLN",
+                                                     "offerUrl": "https://nofluffjobs.com/pl/job/junior-java-developer-sollers-consulting-warszawa-s6et1ucc4"
+                                                 }
+                                                 """.trim()));
 
 
 //    stet 16: user made POST /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and offers as body and system returned CREATED(201) with saved offer
@@ -151,16 +237,16 @@ class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJo
 
 
 //    step 17: user made GET /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) 1 offer
-//        //given
-//        //when
-//        ResultActions performGetOffer = mockMvc.perform(get(urlTemplate).contentType(MediaType.APPLICATION_JSON_VALUE));
-//        //then
-//        String oneOfferJson = performGetOffer.andExpect(status().isOk())
-//                                             .andReturn()
-//                                             .getResponse()
-//                                             .getContentAsString();
-//        List<OfferGetResponseDto> listOfOffers = objectMapper.readValue(oneOfferJson, new TypeReference<>() {
-//        });
-//        assertThat(listOfOffers).hasSize(1);
+        //given
+        //when
+        ResultActions performGetOffer = mockMvc.perform(get(urlTemplate).contentType(MediaType.APPLICATION_JSON_VALUE));
+        //then
+        String oneOfferJson = performGetOffer.andExpect(status().isOk())
+                                             .andReturn()
+                                             .getResponse()
+                                             .getContentAsString();
+        List<OfferGetResponseDto> listOfOffers = objectMapper.readValue(oneOfferJson, new TypeReference<>() {
+        });
+        assertThat(listOfOffers).hasSize(1);
     }
 }
