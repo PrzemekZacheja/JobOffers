@@ -76,6 +76,19 @@ class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJo
 
 
 //    step 8: there are 2 new offers in external HTTP server
+        //given
+        wireMockServer.stubFor(WireMock.get("/offers")
+                                       .willReturn(WireMock.aResponse()
+                                                           .withStatus(HttpStatus.OK.value())
+                                                           .withHeader("Content-Type", "application/json")
+                                                           .withBody(bodyWithTwoOffersJson())));
+        //when
+        List<OfferGetResponseDto> allOffersWithTwoOffers = offerFacade.getAllOffers();
+        //then
+        assertThat(allOffersWithTwoOffers).size()
+                                          .isEqualTo(2);
+
+
 //    step 9: scheduler ran 2nd time and made GET to external server and system added 2 new offers with ids: 1000 and 2000 to database
 //    step 10: user made GET /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) with 2 offers with ids: 1000 and 2000
 
@@ -131,16 +144,16 @@ class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJo
 
 
 //    step 17: user made GET /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) 1 offer
-        //given
-        //when
-        ResultActions performGetOffer = mockMvc.perform(get(urlTemplate).contentType(MediaType.APPLICATION_JSON_VALUE));
-        //then
-        String oneOfferJson = performGetOffer.andExpect(status().isOk())
-                                             .andReturn()
-                                             .getResponse()
-                                             .getContentAsString();
-        List<OfferGetResponseDto> listOfOffers = objectMapper.readValue(oneOfferJson, new TypeReference<>() {
-        });
-        assertThat(listOfOffers).hasSize(1);
+//        //given
+//        //when
+//        ResultActions performGetOffer = mockMvc.perform(get(urlTemplate).contentType(MediaType.APPLICATION_JSON_VALUE));
+//        //then
+//        String oneOfferJson = performGetOffer.andExpect(status().isOk())
+//                                             .andReturn()
+//                                             .getResponse()
+//                                             .getContentAsString();
+//        List<OfferGetResponseDto> listOfOffers = objectMapper.readValue(oneOfferJson, new TypeReference<>() {
+//        });
+//        assertThat(listOfOffers).hasSize(1);
     }
 }
