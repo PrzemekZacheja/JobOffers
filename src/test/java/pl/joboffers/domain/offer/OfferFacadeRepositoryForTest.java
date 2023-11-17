@@ -43,8 +43,8 @@ public class OfferFacadeRepositoryForTest implements OfferFacadeRepository {
     @Override
     public List<Offer> findAll() {
         return databaseInMemory.values()
-                               .stream()
-                               .toList();
+                .stream()
+                .toList();
     }
 
     @Override
@@ -150,6 +150,6 @@ public class OfferFacadeRepositoryForTest implements OfferFacadeRepository {
 
     @Override
     public boolean existsByOfferUrl(String offerUrl) {
-        return databaseInMemory.containsKey(offerUrl);
+        return !databaseInMemory.containsKey(offerUrl);
     }
 }

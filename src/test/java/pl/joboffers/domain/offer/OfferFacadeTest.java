@@ -17,10 +17,11 @@ class OfferFacadeTest {
             repositoryForTest
     );
 
+
     @Test
     void should_return_dto_object() {
         assertThat(offerFacade.getAllOffers()
-                              .get(0)).isInstanceOf(OfferGetResponseDto.class);
+                .get(0)).isInstanceOf(OfferGetResponseDto.class);
     }
 
     @Test
@@ -81,7 +82,7 @@ class OfferFacadeTest {
         String offerUrl = "www.jobsforjuniors3.com";
         OfferGetResponseDto expected = new OfferGetResponseDto("3", "Junior3", "CBD3", "5500" +
                 ".00", "www.jobsforjuniors3.com");
-        List<OfferGetResponseDto> allOffers = offerFacade.getAllOffers();
+        offerFacade.getAllOffers();
         //when
         OfferGetResponseDto oneOfferById = offerFacade.findByOfferUrl(offerUrl);
         //then
@@ -101,6 +102,6 @@ class OfferFacadeTest {
         OfferPostResponseDto offerSavedManually2 = offerFacade.addManualJobOffer(requestDto);
         //then
         assertThat(repositoryForTest.findAll()
-                                    .size()).isEqualTo(1);
+                .size()).isEqualTo(1);
     }
 }

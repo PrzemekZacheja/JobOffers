@@ -19,51 +19,57 @@ public class OfferFacade {
 
     public List<OfferGetResponseDto> getAllOffers() {
         return repository.findAll()
-                         .stream()
-                         .map(MapperOfferResponse::mapToOfferGetResponseDto)
-                         .collect(Collectors.toList());
+                .stream()
+                .map(MapperOfferResponse::mapToOfferGetResponseDto)
+                .collect(Collectors.toList());
     }
 
     public List<Offer> fetchUniqueOfferToDb() {
         List<OfferGetResponseDto> offerGetResponseDtos = client.fetchAllOfferFromForeignAPI();
         List<Offer> offerList = offerGetResponseDtos.stream()
-                                                    .map(MapperOfferResponse::mapToOffer)
-                                                    .toList();
-        log.info("Try to save " + offerList.size() + " offers");
-        return saveUniqueOffers(offerList, repository);
+                .map(MapperOfferResponse::mapToOffer)
+                .toList();
+        List<Offer> filteredUniqueOffers = filterUniqueOffers(offerList);
+        repository.saveAll(filteredUniqueOffers);
+        return filteredUniqueOffers;
     }
 
-    private List<Offer> saveUniqueOffers(List<Offer> offerList, OfferFacadeRepository repository) {
-        offerList.forEach(this::saveUniqueOfferToDb);
-        log.info("saved " + repository.count() + " offers to db");
-        return offerList;
+    private List<Offer> filterUniqueOffers(List<Offer> offerList) {
+        return offerList.stream()
+                .filter(offer -> !offer.offerUrl().isEmpty())
+                .filter(offer -> repository.existsByOfferUrl(offer.offerUrl()))
+                .collect(Collectors.toList());
     }
 
     public OfferPostResponseDto addManualJobOffer(OfferPostRequestDto offerRequestDto) {
         Offer offer = Offer.builder()
-                           .offerUrl(offerRequestDto.offerUrl())
-                           .title(offerRequestDto.title())
-                           .company(offerRequestDto.company())
-                           .salary(offerRequestDto.salary())
-                           .build();
+                .offerUrl(offerRequestDto.offerUrl())
+                .title(offerRequestDto.title())
+                .company(offerRequestDto.company())
+                .salary(offerRequestDto.salary())
+                .build();
         return saveUniqueOfferToDb(offer);
     }
 
     private OfferPostResponseDto saveUniqueOfferToDb(Offer offer) {
-        if (!repository.existsByOfferUrl(offer.offerUrl())) {
+        if (repository.existsByOfferUrl(offer.offerUrl())) {
             Offer offerSaved = repository.save(offer);
             log.info("offer by url " + offer.offerUrl() + " saved to db");
             return MapperOfferResponse.mapToOfferPostResponseDto(offerSaved);
         } else {
             String message = "offer by url " + offer.offerUrl() + " already exist in db";
-            log.error(message);
-            throw new DuplicateKeyException(message);
+            try {
+                throw new DuplicateKeyException(message);
+            } catch (DuplicateKeyException e) {
+                log.error(message);
+            }
+            return null;
         }
     }
 
     public OfferGetResponseDto findOfferById(String id) {
         Offer offerById = repository.findById(id)
-                                    .orElseThrow(() -> new NoOfferInDBException("Not found for id: " + id));
+                .orElseThrow(() -> new NoOfferInDBException("Not found for id: " + id));
         return MapperOfferResponse.mapToOfferGetResponseDto(offerById);
     }
 
