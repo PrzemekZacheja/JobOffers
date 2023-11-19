@@ -4,7 +4,6 @@ import lombok.Builder;
 
 @Builder
 public record OfferPostResponseDto(
-        String id,
         String title,
         String company,
         String salary,

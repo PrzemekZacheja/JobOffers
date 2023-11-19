@@ -2,6 +2,7 @@ package pl.joboffers.domain.offer;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.dao.DuplicateKeyException;
 import pl.joboffers.domain.offer.dto.OfferGetResponseDto;
 import pl.joboffers.domain.offer.dto.OfferPostRequestDto;
 import pl.joboffers.domain.offer.dto.OfferPostResponseDto;
@@ -16,40 +17,54 @@ public class OfferFacade {
     private final OfferResponseClient client;
     private final OfferFacadeRepository repository;
 
-    private void fetchUniqueOfferToDb() {
-        List<OfferGetResponseDto> offerGetResponseDtos = client.fetchAllUniqueOfferFromForeignAPI();
-        List<Offer> newUniqueOffer =
-                offerGetResponseDtos.stream()
-                                    .map(MapperOfferResponse::mapToOffer)
-                                    .toList();
-        log.info("save " + newUniqueOffer.size() + " offers");
-        repository.saveAll(newUniqueOffer);
+    public List<OfferGetResponseDto> getAllOffers() {
+        return repository.findAll()
+                .stream()
+                .map(MapperOfferResponse::mapToOfferGetResponseDto)
+                .collect(Collectors.toList());
     }
 
-    public List<OfferGetResponseDto> getAllOffers() {
-        fetchUniqueOfferToDb();
-        return repository.findAll()
-                         .stream()
-                         .map(MapperOfferResponse::mapToOfferGetResponseDto)
-                         .collect(Collectors.toList());
+    public List<Offer> fetchUniqueOfferToDb() {
+        List<OfferGetResponseDto> offerGetResponseDtos = client.fetchAllOfferFromForeignAPI();
+        List<Offer> offerList = offerGetResponseDtos.stream()
+                .map(MapperOfferResponse::mapToOffer)
+                .toList();
+        List<Offer> filteredUniqueOffers = filterUniqueOffers(offerList);
+        repository.saveAll(filteredUniqueOffers);
+        return filteredUniqueOffers;
+    }
+
+    private List<Offer> filterUniqueOffers(List<Offer> offerList) {
+        return offerList.stream()
+                .filter(offer -> !offer.offerUrl().isEmpty())
+                .filter(offer -> !repository.existsByOfferUrl(offer.offerUrl()))
+                .collect(Collectors.toList());
     }
 
     public OfferPostResponseDto addManualJobOffer(OfferPostRequestDto offerRequestDto) {
         Offer offer = Offer.builder()
-                           .offerUrl(offerRequestDto.offerUrl())
-                           .title(offerRequestDto.title())
-                           .company(offerRequestDto.company())
-                           .salary(offerRequestDto.salary())
-                           .build();
-        Offer offerSaved = repository.save(offer);
-        log.info("offer by url " + offer.offerUrl() + " saved to db");
-        return MapperOfferResponse.mapToOfferPostResponseDto(offerSaved);
+                .offerUrl(offerRequestDto.offerUrl())
+                .title(offerRequestDto.title())
+                .company(offerRequestDto.company())
+                .salary(offerRequestDto.salary())
+                .build();
+        return saveUniqueOfferToDb(offer);
+    }
+
+    private OfferPostResponseDto saveUniqueOfferToDb(Offer offer) {
+        if (!repository.existsByOfferUrl(offer.offerUrl())) {
+            Offer offerSaved = repository.save(offer);
+            log.info("offer by url " + offer.offerUrl() + " saved to db");
+            return MapperOfferResponse.mapToOfferPostResponseDto(offerSaved);
+        } else {
+            String message = "offer by url " + offer.offerUrl() + " already exist in db";
+            throw new DuplicateKeyException(message);
+        }
     }
 
     public OfferGetResponseDto findOfferById(String id) {
-        Offer offerById =
-                repository.findById(id)
-                          .orElseThrow(() -> new NoOfferInDBException("Not found for id: " + id));
+        Offer offerById = repository.findById(id)
+                .orElseThrow(() -> new NoOfferInDBException("Not found for id: " + id));
         return MapperOfferResponse.mapToOfferGetResponseDto(offerById);
     }
 

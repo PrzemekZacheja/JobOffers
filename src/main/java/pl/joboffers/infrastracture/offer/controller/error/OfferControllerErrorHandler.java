@@ -22,12 +22,12 @@ public class OfferControllerErrorHandler {
         return new OfferErrorResponseDto(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(DuplicateKeyException.class)
+    @ExceptionHandler(org.springframework.dao.DuplicateKeyException.class)
     @ResponseBody
     @ResponseStatus(HttpStatus.CONFLICT)
     public OfferErrorResponseDto handleOfferDuplicatedException(DuplicateKeyException e) {
-        String message = "Offer already exist";
+        String message = " Offer already exist";
         log.warn(message);
-        return new OfferErrorResponseDto(message, HttpStatus.CONFLICT);
+        return new OfferErrorResponseDto(e.getMessage(), HttpStatus.CONFLICT);
     }
 }

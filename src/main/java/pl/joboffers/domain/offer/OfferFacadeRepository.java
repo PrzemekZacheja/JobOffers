@@ -6,9 +6,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface OfferFacadeRepository extends MongoRepository<Offer, String> {
 
+    boolean existsByOfferUrl(String offerUrl);
 
     Offer findByOfferUrl(String offerUrl);
-
-    boolean existsByOfferUrl(String offerUrl);
 
 }

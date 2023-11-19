@@ -21,7 +21,7 @@ public class OfferResponseClientRestTemplate implements OfferResponseClient {
     private final int ports;
 
     @Override
-    public List<OfferGetResponseDto> fetchAllUniqueOfferFromForeignAPI() {
+    public List<OfferGetResponseDto> fetchAllOfferFromForeignAPI() {
         String url = UriComponentsBuilder.fromHttpUrl(getUrlForService())
                                          .toUriString();
         HttpHeaders headers = new HttpHeaders();

@@ -1,6 +1,6 @@
 package pl.joboffers.domain.offer;
 
-import org.springframework.dao.DuplicateKeyException;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,32 +19,27 @@ public class OfferFacadeRepositoryForTest implements OfferFacadeRepository {
 
 
     @Override
-    public <S extends Offer> S save(final S entity) {
-        if (!databaseInMemory.containsValue(entity.offerUrl())) {
-            databaseInMemory.put(entity.offerUrl(), entity);
-        } else {
-            throw new DuplicateKeyException(String.format("Offer with key %s already exist", entity.offerUrl()));
-        }
+    public <S extends Offer> @NotNull S save(final S entity) {
+        databaseInMemory.put(entity.offerUrl(), entity);
         return entity;
     }
 
 
     @Override
     public boolean existsById(final String s) {
-        return false;
+        return databaseInMemory.containsKey(s);
     }
 
 
     @Override
     public <S extends Offer> List<S> saveAll(Iterable<S> entities) {
-        return null;
+        entities.forEach(entity -> databaseInMemory.put(entity.offerUrl(), entity));
+        return (List<S>) entities;
     }
 
     @Override
     public List<Offer> findAll() {
-        return databaseInMemory.values()
-                               .stream()
-                               .toList();
+        return databaseInMemory.values().stream().toList();
     }
 
     @Override
@@ -90,17 +85,17 @@ public class OfferFacadeRepositoryForTest implements OfferFacadeRepository {
 
     @Override
     public long count() {
-        return 0;
+        return databaseInMemory.size();
     }
 
     @Override
     public void deleteById(String s) {
-
+        databaseInMemory.remove(s);
     }
 
     @Override
     public void delete(Offer entity) {
-
+        databaseInMemory.remove(entity.offerUrl());
     }
 
     @Override
@@ -110,12 +105,12 @@ public class OfferFacadeRepositoryForTest implements OfferFacadeRepository {
 
     @Override
     public void deleteAll(Iterable<? extends Offer> entities) {
-
+        databaseInMemory.clear();
     }
 
     @Override
     public void deleteAll() {
-
+        databaseInMemory.clear();
     }
 
     @Override

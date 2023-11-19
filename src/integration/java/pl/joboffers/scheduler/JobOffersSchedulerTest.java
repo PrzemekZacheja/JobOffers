@@ -22,7 +22,7 @@ class JobOffersSchedulerTest extends BaseIntegrationTest {
     @Test
     void should_run_job_offers_get_method_exactly_given_times() {
         await().atMost(Duration.ofSeconds(3))
-               .untilAsserted(() -> verify(offerResponseClient, times(3)).fetchAllUniqueOfferFromForeignAPI());
+               .untilAsserted(() -> verify(offerResponseClient, times(3)).fetchAllOfferFromForeignAPI());
     }
 
 }
