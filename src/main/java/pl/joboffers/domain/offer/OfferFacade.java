@@ -37,7 +37,7 @@ public class OfferFacade {
     private List<Offer> filterUniqueOffers(List<Offer> offerList) {
         return offerList.stream()
                 .filter(offer -> !offer.offerUrl().isEmpty())
-                .filter(offer -> repository.existsByOfferUrl(offer.offerUrl()))
+                .filter(offer -> !repository.existsByOfferUrl(offer.offerUrl()))
                 .collect(Collectors.toList());
     }
 
@@ -52,18 +52,13 @@ public class OfferFacade {
     }
 
     private OfferPostResponseDto saveUniqueOfferToDb(Offer offer) {
-        if (repository.existsByOfferUrl(offer.offerUrl())) {
+        if (!repository.existsByOfferUrl(offer.offerUrl())) {
             Offer offerSaved = repository.save(offer);
             log.info("offer by url " + offer.offerUrl() + " saved to db");
             return MapperOfferResponse.mapToOfferPostResponseDto(offerSaved);
         } else {
             String message = "offer by url " + offer.offerUrl() + " already exist in db";
-            try {
-                throw new DuplicateKeyException(message);
-            } catch (DuplicateKeyException e) {
-                log.error(message);
-            }
-            return null;
+            throw new DuplicateKeyException(message);
         }
     }
 

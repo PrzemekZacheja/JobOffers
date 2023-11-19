@@ -1,6 +1,7 @@
 package pl.joboffers.domain.offer;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.dao.DuplicateKeyException;
 import pl.joboffers.domain.offer.dto.OfferGetResponseDto;
 import pl.joboffers.domain.offer.dto.OfferPostRequestDto;
 import pl.joboffers.domain.offer.dto.OfferPostResponseDto;
@@ -20,14 +21,18 @@ class OfferFacadeTest {
 
     @Test
     void should_return_dto_object() {
-        assertThat(offerFacade.getAllOffers()
-                .get(0)).isInstanceOf(OfferGetResponseDto.class);
+        //given
+        //when
+        offerFacade.fetchUniqueOfferToDb();
+        //then
+        assertThat(offerFacade.getAllOffers().get(0)).isInstanceOf(OfferGetResponseDto.class);
     }
 
     @Test
     void should_return_list_of_3_object_from_client() {
         //given
         //when
+        offerFacade.fetchUniqueOfferToDb();
         List<OfferGetResponseDto> allOffers = offerFacade.getAllOffers();
         //then
         assertThat(allOffers.size()).isEqualTo(3);
@@ -38,11 +43,11 @@ class OfferFacadeTest {
         //given
         String link = "www.jobsforjuniors1.com";
         //when
-        List<OfferGetResponseDto> allOffers = offerFacade.getAllOffers();
+        List<Offer> allOffers = offerFacade.fetchUniqueOfferToDb();
         //then
         Offer byLinkAsId =
                 repositoryForTest.findByOfferUrl(link);
-        assertThat(allOffers.get(0)).isEqualTo(MapperOfferResponse.mapToOfferGetResponseDto(byLinkAsId));
+        assertThat(allOffers.get(0)).isEqualTo(byLinkAsId);
     }
 
     @Test
@@ -82,7 +87,7 @@ class OfferFacadeTest {
         String offerUrl = "www.jobsforjuniors3.com";
         OfferGetResponseDto expected = new OfferGetResponseDto("3", "Junior3", "CBD3", "5500" +
                 ".00", "www.jobsforjuniors3.com");
-        offerFacade.getAllOffers();
+        offerFacade.fetchUniqueOfferToDb();
         //when
         OfferGetResponseDto oneOfferById = offerFacade.findByOfferUrl(offerUrl);
         //then
@@ -98,8 +103,12 @@ class OfferFacadeTest {
         String salary = "3500.00";
         OfferPostRequestDto requestDto = new OfferPostRequestDto(nameOfPosition, nameOfCompany, salary, link);
         //when
-        OfferPostResponseDto offerSavedManually1 = offerFacade.addManualJobOffer(requestDto);
-        OfferPostResponseDto offerSavedManually2 = offerFacade.addManualJobOffer(requestDto);
+        try {
+            OfferPostResponseDto offerSavedManually1 = offerFacade.addManualJobOffer(requestDto);
+            OfferPostResponseDto offerSavedManually2 = offerFacade.addManualJobOffer(requestDto);
+        } catch (DuplicateKeyException e) {
+            System.out.println("DuplicateKeyException");
+        }
         //then
         assertThat(repositoryForTest.findAll()
                 .size()).isEqualTo(1);
