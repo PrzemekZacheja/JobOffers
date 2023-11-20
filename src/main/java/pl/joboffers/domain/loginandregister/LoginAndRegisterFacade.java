@@ -26,14 +26,14 @@ public class LoginAndRegisterFacade {
         }
     }
 
+    private boolean isSavedInRepository(String email) {
+        return repository.findByEmail(email).isPresent();
+    }
+
     public UserDto loginUser(String email) {
         User user = repository.findByEmail(email)
                 .orElseThrow(() -> new NoUserFoundInRepositoryException(email));
         user.loggIn();
         return MapperLoginAndRegister.mapToUserDto(user);
-    }
-
-    private boolean isSavedInRepository(String email) {
-        return repository.findByEmail(email).isPresent();
     }
 }
