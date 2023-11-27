@@ -36,7 +36,9 @@ class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJo
 
 //    step 1: there are no offers in external HTTP server (http://ec2-3-120-147-150.eu-central-1.compute.amazonaws.com:5057/offers)
         //given
-        wireMockServer.stubFor(WireMock.get("/offers").willReturn(WireMock.aResponse().withStatus(HttpStatus.OK.value()).withHeader("Content-Type", "application/json").withBody(bodyWithZeroOffersJson())));
+        wireMockServer.stubFor(WireMock.get("/offers").willReturn(
+                WireMock.aResponse().withStatus(HttpStatus.OK.value()).withHeader("Content-Type", "application/json")
+                        .withBody(bodyWithZeroOffersJson())));
         //when
         List<OfferGetResponseDto> allOffers = offerFacade.getAllOffers();
         //then
@@ -62,18 +64,17 @@ class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJo
         ResultActions perform = mockMvc.perform(get(urlTemplate).contentType(MediaType.APPLICATION_JSON_VALUE));
         MvcResult mvcResult = perform.andExpect(status().isOk()).andReturn();
         String contentAsString = mvcResult.getResponse().getContentAsString();
-        List<OfferGetResponseDto> offerGetResponseDtoList = objectMapper.readValue(contentAsString, new TypeReference<>() {
-        });
+        List<OfferGetResponseDto> offerGetResponseDtoList = objectMapper.readValue(contentAsString,
+                new TypeReference<>() {
+                });
         //then
         assertThat(offerGetResponseDtoList).isEmpty();
 
 
 //    step 8: there are 2 new offers in external HTTP server
         //given & when & then
-        wireMockServer.stubFor(WireMock.get("/offers")
-                .willReturn(WireMock.aResponse()
-                        .withStatus(HttpStatus.OK.value())
-                        .withHeader("Content-Type", "application/json")
+        wireMockServer.stubFor(WireMock.get("/offers").willReturn(
+                WireMock.aResponse().withStatus(HttpStatus.OK.value()).withHeader("Content-Type", "application/json")
                         .withBody(bodyWithTwoOffersJson())));
 
 
@@ -86,11 +87,13 @@ class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJo
 
 //    step 10: user made GET /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) with 2 offers
         //given & when
-        ResultActions performForTwoOffers = mockMvc.perform(get(urlTemplate).contentType(MediaType.APPLICATION_JSON_VALUE));
+        ResultActions performForTwoOffers = mockMvc.perform(
+                get(urlTemplate).contentType(MediaType.APPLICATION_JSON_VALUE));
         MvcResult mvcResultForTwoOffers = performForTwoOffers.andExpect(status().isOk()).andReturn();
         String contentOFTwoOffers = mvcResultForTwoOffers.getResponse().getContentAsString();
-        List<OfferGetResponseDto> offerGetResponseDtosForStepTen = objectMapper.readValue(contentOFTwoOffers, new TypeReference<>() {
-        });
+        List<OfferGetResponseDto> offerGetResponseDtosForStepTen = objectMapper.readValue(contentOFTwoOffers,
+                new TypeReference<>() {
+                });
         //then
         assertThat(offerGetResponseDtosForStepTen).size().isEqualTo(2);
 
@@ -99,7 +102,8 @@ class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJo
         //given
         urlTemplate = "/offers/9999";
         //when
-        ResultActions performGetOfferWithNoExistingId = mockMvc.perform(get(urlTemplate).contentType(MediaType.APPLICATION_JSON_VALUE));
+        ResultActions performGetOfferWithNoExistingId = mockMvc.perform(
+                get(urlTemplate).contentType(MediaType.APPLICATION_JSON_VALUE));
         //then
         performGetOfferWithNoExistingId.andExpect(status().isNotFound()).andExpect(content().json("""
                   {
@@ -115,20 +119,20 @@ class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJo
         String id = firstOffer.id();
         urlTemplate = "/offers/" + id;
         //when
-        ResultActions performGetOfferWithExistingId = mockMvc.perform(get(urlTemplate).contentType(MediaType.APPLICATION_JSON_VALUE));
+        ResultActions performGetOfferWithExistingId = mockMvc.perform(
+                get(urlTemplate).contentType(MediaType.APPLICATION_JSON_VALUE));
         //then
         performGetOfferWithExistingId.andExpect(status().isOk());
         String contentOFOffer = performGetOfferWithExistingId.andReturn().getResponse().getContentAsString();
-        OfferGetResponseDto offerGetResponseDtoForStepTwelve = objectMapper.readValue(contentOFOffer, OfferGetResponseDto.class);
+        OfferGetResponseDto offerGetResponseDtoForStepTwelve = objectMapper.readValue(contentOFOffer,
+                OfferGetResponseDto.class);
         assertThat(offerGetResponseDtoForStepTwelve).isEqualTo(firstOffer);
 
 
 //    step 13: there are 2 new offers in external HTTP server
         //given && when & then
-        wireMockServer.stubFor(WireMock.get("/offers")
-                .willReturn(WireMock.aResponse()
-                        .withStatus(HttpStatus.OK.value())
-                        .withHeader("Content-Type", "application/json")
+        wireMockServer.stubFor(WireMock.get("/offers").willReturn(
+                WireMock.aResponse().withStatus(HttpStatus.OK.value()).withHeader("Content-Type", "application/json")
                         .withBody(bodyWithFourOffersJson())));
 
 
@@ -141,7 +145,8 @@ class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJo
 
 //    step 15: user made GET /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) with 4 offers with ids: 1000,2000, 3000 and 4000
         //given & when
-        ResultActions performForFourOffers = mockMvc.perform(get("/offers").contentType(MediaType.APPLICATION_JSON_VALUE));
+        ResultActions performForFourOffers = mockMvc.perform(
+                get("/offers").contentType(MediaType.APPLICATION_JSON_VALUE));
         MvcResult mvcResultForFourOffers = performForFourOffers.andExpect(status().isOk()).andReturn();
         String contentOfFourOffers = mvcResultForFourOffers.getResponse().getContentAsString();
         List<OfferGetResponseDto> fourOffers = objectMapper.readValue(contentOfFourOffers, new TypeReference<>() {
@@ -150,7 +155,13 @@ class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJo
         assertThat(fourOffers).size().isEqualTo(4);
         OfferGetResponseDto offerGetResponseDtoThirdOffer = fourOffers.get(0);
         OfferGetResponseDto offerGetResponseDtoFourthOffer = fourOffers.get(1);
-        assertThat(fourOffers).contains(new OfferGetResponseDto(offerGetResponseDtoThirdOffer.id(), offerGetResponseDtoThirdOffer.title(), offerGetResponseDtoThirdOffer.company(), offerGetResponseDtoThirdOffer.salary(), offerGetResponseDtoThirdOffer.offerUrl()), new OfferGetResponseDto(offerGetResponseDtoFourthOffer.id(), offerGetResponseDtoFourthOffer.title(), offerGetResponseDtoFourthOffer.company(), offerGetResponseDtoFourthOffer.salary(), offerGetResponseDtoFourthOffer.offerUrl()));
+        assertThat(fourOffers).contains(
+                new OfferGetResponseDto(offerGetResponseDtoThirdOffer.id(), offerGetResponseDtoThirdOffer.title(),
+                        offerGetResponseDtoThirdOffer.company(), offerGetResponseDtoThirdOffer.salary(),
+                        offerGetResponseDtoThirdOffer.offerUrl()),
+                new OfferGetResponseDto(offerGetResponseDtoFourthOffer.id(), offerGetResponseDtoFourthOffer.title(),
+                        offerGetResponseDtoFourthOffer.company(), offerGetResponseDtoFourthOffer.salary(),
+                        offerGetResponseDtoFourthOffer.offerUrl()));
 
 
 //    stet 16: user made POST /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and offers as body and system returned CREATED(201) with saved offer
@@ -168,10 +179,10 @@ class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJo
         //then
         MvcResult creadtedMvcResult = performPostOffer.andExpect(status().isCreated()).andReturn();
         String createdContentAsString = creadtedMvcResult.getResponse().getContentAsString();
-        OfferPostResponseDto parsedOfferSavedDto = objectMapper.readValue(createdContentAsString, OfferPostResponseDto.class);
+        OfferPostResponseDto parsedOfferSavedDto = objectMapper.readValue(createdContentAsString,
+                OfferPostResponseDto.class);
 
-        assertAll(
-                () -> assertThat(parsedOfferSavedDto.title()).isEqualTo("string Title"),
+        assertAll(() -> assertThat(parsedOfferSavedDto.title()).isEqualTo("string Title"),
                 () -> assertThat(parsedOfferSavedDto.company()).isEqualTo("string Company"),
                 () -> assertThat(parsedOfferSavedDto.salary()).isEqualTo("string Salary"),
                 () -> assertThat(parsedOfferSavedDto.offerUrl()).isEqualTo("string OfferURL"));
