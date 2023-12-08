@@ -32,15 +32,15 @@ public class DuplicateOfferByUrlExceptionIntegrationTest extends BaseIntegration
         //step 1:
         //given && when
         ResultActions performFirstPostOffer = mockMvc.perform(post(urlTemplate).content("""
-                          {
-                             "title": "string Title",
-                             "company": "string Company",
-                             "salary": "string Salary",
-                             "offerUrl": "string OfferURL"
-                           }
-                        """.trim())
-                .contentType(
-                        MediaType.APPLICATION_JSON_VALUE + ";" + "charset=UTF-8"));
+                                                                                                  {
+                                                                                                     "title": "string Title",
+                                                                                                     "company": "string Company",
+                                                                                                     "salary": "string Salary",
+                                                                                                     "offerUrl": "string OfferURL"
+                                                                                                   }
+                                                                                                """.trim())
+                                                                               .contentType(
+                                                                                       MediaType.APPLICATION_JSON_VALUE + ";" + "charset=UTF-8"));
         //then
         performFirstPostOffer.andExpect(status().isCreated());
 
@@ -48,15 +48,15 @@ public class DuplicateOfferByUrlExceptionIntegrationTest extends BaseIntegration
         //step 2:
         //given && when
         ResultActions performSecondPostOffer = mockMvc.perform(post(urlTemplate).content("""
-                          {
-                             "title": "string Title",
-                             "company": "string Company",
-                             "salary": "string Salary",
-                             "offerUrl": "string OfferURL"
-                           }
-                        """.trim())
-                .contentType(
-                        MediaType.APPLICATION_JSON_VALUE + ";" + "charset=UTF-8"));
+                                                                                                   {
+                                                                                                      "title": "string Title",
+                                                                                                      "company": "string Company",
+                                                                                                      "salary": "string Salary",
+                                                                                                      "offerUrl": "string OfferURL"
+                                                                                                    }
+                                                                                                 """.trim())
+                                                                                .contentType(
+                                                                                        MediaType.APPLICATION_JSON_VALUE + ";" + "charset=UTF-8"));
         //then
         performSecondPostOffer.andExpect(status().isConflict());
     }

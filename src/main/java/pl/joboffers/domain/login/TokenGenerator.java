@@ -1,4 +1,4 @@
-package pl.joboffers.domain.loginandregister;
+package pl.joboffers.domain.login;
 
 import java.security.SecureRandom;
 import java.util.Arrays;

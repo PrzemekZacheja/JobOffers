@@ -14,17 +14,20 @@ public class OfferResponseClientImpl implements OfferResponseClient {
     public List<OfferGetResponseDto> fetchAllOfferFromForeignAPI() {
         List<OfferGetResponseDto> offerGetResponseDtos =
                 List.of(
-                        new OfferGetResponseDto("1",
+                        new OfferGetResponseDto(
+                                "1",
                                 "Junior1",
                                 "CBD1",
                                 "3500.00",
                                 "www.jobsforjuniors1.com"),
-                        new OfferGetResponseDto("2",
+                        new OfferGetResponseDto(
+                                "2",
                                 "Junior2",
                                 "CBD2",
                                 "4500.00",
                                 "www.jobsforjuniors2.com"),
-                        new OfferGetResponseDto("3",
+                        new OfferGetResponseDto(
+                                "3",
                                 "Junior3",
                                 "CBD3",
                                 "5500.00",
