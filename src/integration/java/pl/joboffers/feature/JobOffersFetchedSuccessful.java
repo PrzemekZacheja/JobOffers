@@ -59,23 +59,24 @@ class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJo
         //then
         assertThat(savedOffers).isEmpty();
 
-//    step 3: user tried to get JwtAuthenticatorFacade token by requesting POST /token with email=someUser, password=somePassword and system returned FORBIDDEN(403)
+//    step 3: user tried to get JwtAuthenticatorFacade token by requesting POST /token with email=someUser, password=somePassword and system returned UNAUTHORIZED(401)
         //given & when
         ResultActions failedLoginRequest = mockMvc.perform(post("/token")
                                                                    .content("""
                                                                                     {
-                                                                                      "username": "someUser",
-                                                                                      "password": "somePassword
+                                                                                      "email": "someUser",
+                                                                                      "password": "somePassword"
                                                                                     }
                                                                                        """.trim())
-                                                                   .contentType(MediaType.APPLICATION_JSON_VALUE));
+                                                                   .contentType(MediaType.APPLICATION_JSON_VALUE + ";" + "charset=UTF-8"));
         //then
-        failedLoginRequest.andExpect(status().isForbidden()).andExpect(content().json("""
-                                                                                              {
-                                                                                              "message": "Bad credentials",
-                                                                                              "status": "Unauthorized"
-                                                                                              }
-                                                                                              """.trim()));
+        failedLoginRequest.andExpect(status().isUnauthorized())
+                          .andExpect(content().json("""
+                                                            {
+                                                            "message": "Bad credentials",
+                                                            "httpStatus": "UNAUTHORIZED"
+                                                            }
+                                                            """.trim()));
 
 
 //    step 4: user made GET /offers with no jwt token and system returned FORBIDDEN(403)
@@ -90,8 +91,8 @@ class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJo
         ResultActions registerPerform = mockMvc.perform(post("/register")
                                                                 .content("""
                                                                                  {
-                                                                                 "username": "someUser",
-                                                                                 "password": "somePassword
+                                                                                 "email": "someUser",
+                                                                                 "password": "somePassword"
                                                                                  }
                                                                                  """.trim())
                                                                 .contentType(MediaType.APPLICATION_JSON_VALUE));
@@ -104,7 +105,7 @@ class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJo
 
         assertAll(
                 () -> assertThat(resultRegistrationDto.email()).isEqualTo("someUser"),
-                () -> assertThat(resultRegistrationDto.isLogged()).isTrue());
+                () -> assertThat(resultRegistrationDto.isLogged()).isFalse());
 
         //    step 6: user tried to get JwtAuthenticatorFacade token by requesting POST /token with email=someUser, password=somePassword and system returned OK(200) and jwttoken=AAAA.BBBB.CCC
 
