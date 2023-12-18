@@ -1,6 +1,6 @@
-package pl.joboffers.domain.login;
+package pl.joboffers.domain.loginandregister;
 
-import pl.joboffers.domain.login.dto.UserDto;
+import pl.joboffers.domain.loginandregister.dto.UserDto;
 
 public class MapperLoginAndRegister {
 

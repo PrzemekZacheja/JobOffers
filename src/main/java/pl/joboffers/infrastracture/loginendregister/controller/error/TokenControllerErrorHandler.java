@@ -1,4 +1,4 @@
-package pl.joboffers.infrastracture.token.controller.error;
+package pl.joboffers.infrastracture.loginendregister.controller.error;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;

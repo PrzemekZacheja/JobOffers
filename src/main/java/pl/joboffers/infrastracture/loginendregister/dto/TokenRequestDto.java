@@ -1,4 +1,4 @@
-package pl.joboffers.infrastracture.token.controller;
+package pl.joboffers.infrastracture.loginendregister.dto;
 
 import javax.validation.constraints.NotBlank;
 

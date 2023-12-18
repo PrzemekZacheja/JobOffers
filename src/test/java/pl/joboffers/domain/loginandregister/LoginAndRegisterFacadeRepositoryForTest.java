@@ -1,4 +1,4 @@
-package pl.joboffers.domain.login;
+package pl.joboffers.domain.loginandregister;
 
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;

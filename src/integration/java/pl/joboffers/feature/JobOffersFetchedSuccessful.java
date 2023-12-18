@@ -9,6 +9,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import pl.joboffers.BaseIntegrationTest;
+import pl.joboffers.domain.loginandregister.LoginAndRegisterFacadeRepository;
+import pl.joboffers.domain.loginandregister.dto.ResultRegistrationDto;
 import pl.joboffers.domain.offer.OfferFacade;
 import pl.joboffers.domain.offer.dto.OfferGetResponseDto;
 import pl.joboffers.domain.offer.dto.OfferPostResponseDto;
@@ -30,6 +32,8 @@ class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJo
 
     @Autowired
     OfferScheduler scheduler;
+
+    private LoginAndRegisterFacadeRepository userRepository;
 
     @Test
     void should_fetch_all_job_offers_for_junior_save_to_repository_and_show_to_user() throws Exception {
@@ -55,7 +59,7 @@ class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJo
         //then
         assertThat(savedOffers).isEmpty();
 
-//    step 3: user tried to get JwtAuthenticatorFacade token by requesting POST /token with email=someUser, password=somePassword and system returned UNAUTHORIZED(401)
+//    step 3: user tried to get JwtAuthenticatorFacade token by requesting POST /token with email=someUser, password=somePassword and system returned FORBIDDEN(403)
         //given & when
         ResultActions failedLoginRequest = mockMvc.perform(post("/token")
                                                                    .content("""
@@ -64,39 +68,63 @@ class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJo
                                                                                       "password": "somePassword
                                                                                     }
                                                                                        """.trim())
-                                                                   .contentType(MediaType.APPLICATION_JSON_VALUE)
-                                                          );
+                                                                   .contentType(MediaType.APPLICATION_JSON_VALUE));
         //then
-        failedLoginRequest.andExpect(status().isUnauthorized())
-                          .andExpect(content().json("""
-                                                            {
-                                                            "message": "Bad credentials",
-                                                            "status": "Unauthorized",
-                                                            }
-                                                            """.trim()));
+        failedLoginRequest.andExpect(status().isForbidden()).andExpect(content().json("""
+                                                                                              {
+                                                                                              "message": "Bad credentials",
+                                                                                              "status": "Unauthorized"
+                                                                                              }
+                                                                                              """.trim()));
 
 
-//    step 4: user made GET /offers with no jwt token and system returned UNAUTHORIZED(401)
-//    step 5: user made POST /register with email=someUser, password=somePassword and system registered user with status OK(200)
-//    step 6: user tried to get JwtAuthenticatorFacade token by requesting POST /token with email=someUser, password=somePassword and system returned OK(200) and jwttoken=AAAA.BBBB.CCC
+//    step 4: user made GET /offers with no jwt token and system returned FORBIDDEN(403)
+        //given & when
+        ResultActions failedPerform = mockMvc.perform(get("/offers").contentType(MediaType.APPLICATION_JSON_VALUE));
+        //then
+        failedPerform.andExpect(status().isForbidden());
 
 
-//    step 7: user made GET /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) with 0 offers
+//    step 5: user made POST /register with email=someUser, password=somePassword and system registered user with status CREATED(201)
+        //given && when
+        ResultActions registerPerform = mockMvc.perform(post("/register")
+                                                                .content("""
+                                                                                 {
+                                                                                 "username": "someUser",
+                                                                                 "password": "somePassword
+                                                                                 }
+                                                                                 """.trim())
+                                                                .contentType(MediaType.APPLICATION_JSON_VALUE));
+        //then
+        ResultActions resultActions = registerPerform.andExpect(status().isCreated());
+        String contentAsString = resultActions.andReturn().getResponse().getContentAsString();
+        ResultRegistrationDto resultRegistrationDto = objectMapper.readValue(
+                contentAsString,
+                ResultRegistrationDto.class);
+
+        assertAll(
+                () -> assertThat(resultRegistrationDto.email()).isEqualTo("someUser"),
+                () -> assertThat(resultRegistrationDto.isLogged()).isTrue());
+
+        //    step 6: user tried to get JwtAuthenticatorFacade token by requesting POST /token with email=someUser, password=somePassword and system returned OK(200) and jwttoken=AAAA.BBBB.CCC
+
+
+        //    step 7: user made GET /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) with 0 offers
         //given
         String urlTemplate = "/offers";
         // when
         ResultActions perform = mockMvc.perform(get(urlTemplate).contentType(MediaType.APPLICATION_JSON_VALUE));
         MvcResult mvcResult = perform.andExpect(status().isOk()).andReturn();
-        String contentAsString = mvcResult.getResponse().getContentAsString();
+        String content = mvcResult.getResponse().getContentAsString();
         List<OfferGetResponseDto> offerGetResponseDtoList = objectMapper.readValue(
-                contentAsString,
+                content,
                 new TypeReference<>() {
                 });
         //then
         assertThat(offerGetResponseDtoList).isEmpty();
 
 
-//    step 8: there are 2 new offers in external HTTP server
+        //    step 8: there are 2 new offers in external HTTP server
         //given & when & then
         wireMockServer.stubFor(WireMock
                                        .get("/offers")
@@ -107,14 +135,14 @@ class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJo
                                                            .withBody(bodyWithTwoOffersJson())));
 
 
-//    step 9: scheduler ran 2nd time and made GET to external server and system added 2 new offers with ids: 1000 and 2000 to database
+        //    step 9: scheduler ran 2nd time and made GET to external server and system added 2 new offers with ids: 1000 and 2000 to database
         //given & when
         List<OfferGetResponseDto> offerGetResponseDtosForStepNine = scheduler.scheduleFetchAllOffers();
         //then
         assertThat(offerGetResponseDtosForStepNine).size().isEqualTo(2);
 
 
-//    step 10: user made GET /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) with 2 offers
+        //    step 10: user made GET /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) with 2 offers
         //given & when
         ResultActions performForTwoOffers = mockMvc.perform(get(urlTemplate).contentType(MediaType.APPLICATION_JSON_VALUE));
         MvcResult mvcResultForTwoOffers = performForTwoOffers.andExpect(status().isOk()).andReturn();
@@ -127,7 +155,7 @@ class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJo
         assertThat(offerGetResponseDtosForStepTen).size().isEqualTo(2);
 
 
-//    step 11: user made GET /offers/9999 and system returned NOT_FOUND(404) with message “Offer with id 9999 not found”
+        //    step 11: user made GET /offers/9999 and system returned NOT_FOUND(404) with message “Offer with id 9999 not found”
         //given
         urlTemplate = "/offers/9999";
         //when

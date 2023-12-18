@@ -1,4 +1,4 @@
-package pl.joboffers.domain.login;
+package pl.joboffers.domain.loginandregister;
 
 import lombok.Builder;
 import lombok.Getter;
