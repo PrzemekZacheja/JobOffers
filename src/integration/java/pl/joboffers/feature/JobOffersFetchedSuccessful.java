@@ -14,9 +14,11 @@ import pl.joboffers.domain.loginandregister.dto.ResultRegistrationDto;
 import pl.joboffers.domain.offer.OfferFacade;
 import pl.joboffers.domain.offer.dto.OfferGetResponseDto;
 import pl.joboffers.domain.offer.dto.OfferPostResponseDto;
+import pl.joboffers.infrastracture.loginendregister.dto.TokenResponseDto;
 import pl.joboffers.infrastracture.offer.scheduler.OfferScheduler;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -59,7 +61,7 @@ class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJo
         //then
         assertThat(savedOffers).isEmpty();
 
-//    step 3: user tried to get JwtAuthenticatorFacade token by requesting POST /token with email=someUser, password=somePassword and system returned UNAUTHORIZED(401)
+//    step 3: user tried to get JwtAuthenticatorFacade tokenInStepSix by requesting POST /tokenInStepSix with email=someUser, password=somePassword and system returned UNAUTHORIZED(401)
         //given & when
         ResultActions failedLoginRequest = mockMvc.perform(post("/token")
                                                                    .content("""
@@ -70,16 +72,15 @@ class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJo
                                                                                        """.trim())
                                                                    .contentType(MediaType.APPLICATION_JSON_VALUE + ";" + "charset=UTF-8"));
         //then
-        failedLoginRequest.andExpect(status().isUnauthorized())
-                          .andExpect(content().json("""
-                                                            {
-                                                            "message": "Bad credentials",
-                                                            "httpStatus": "UNAUTHORIZED"
-                                                            }
-                                                            """.trim()));
+        failedLoginRequest.andExpect(status().isUnauthorized()).andExpect(content().json("""
+                                                                                                 {
+                                                                                                 "message": "Bad credentials",
+                                                                                                 "httpStatus": "UNAUTHORIZED"
+                                                                                                 }
+                                                                                                 """.trim()));
 
 
-//    step 4: user made GET /offers with no jwt token and system returned FORBIDDEN(403)
+//    step 4: user made GET /offers with no jwt tokenInStepSix and system returned FORBIDDEN(403)
         //given & when
         ResultActions failedPerform = mockMvc.perform(get("/offers").contentType(MediaType.APPLICATION_JSON_VALUE));
         //then
@@ -107,20 +108,37 @@ class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJo
                 () -> assertThat(resultRegistrationDto.email()).isEqualTo("someUser"),
                 () -> assertThat(resultRegistrationDto.isLogged()).isFalse());
 
-        //    step 6: user tried to get JwtAuthenticatorFacade token by requesting POST /token with email=someUser, password=somePassword and system returned OK(200) and jwttoken=AAAA.BBBB.CCC
+        //    step 6: user tried to get JwtAuthenticatorFacade tokenInStepSix by requesting POST /tokenInStepSix with email=someUser, password=somePassword and system returned OK(200) and jwttoken=AAAA.BBBB.CCC
+        //given & when
+        ResultActions successGeneratedToken = mockMvc.perform(post("/token")
+                                                                      .content("""
+                                                                                       {
+                                                                                         "email": "someUser",
+                                                                                         "password": "somePassword"
+                                                                                       }
+                                                                                          """.trim())
+                                                                      .contentType(MediaType.APPLICATION_JSON_VALUE + ";" + "charset=UTF-8"));
+
+        //then
+        ResultActions successResultToken = successGeneratedToken.andExpect(status().isOk());
+        String contentAsStringToken = successResultToken.andReturn().getResponse().getContentAsString();
+        TokenResponseDto tokenResponseDto = objectMapper.readValue(contentAsStringToken, TokenResponseDto.class);
+        assertThat(tokenResponseDto.email()).isEqualTo("someUser");
+        String tokenInStepSix = tokenResponseDto.token();
+        assertThat(tokenInStepSix).matches(Pattern.compile("^([A-Za-z0-9-_=]+\\.)+([A-Za-z0-9-_=]+\\.?$)"));
 
 
         //    step 7: user made GET /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) with 0 offers
         //given
         String urlTemplate = "/offers";
         // when
-        ResultActions perform = mockMvc.perform(get(urlTemplate).contentType(MediaType.APPLICATION_JSON_VALUE));
+        ResultActions perform = mockMvc.perform(get(urlTemplate)
+                                                        .header("Authorization", "Bearer" + tokenInStepSix)
+                                                        .contentType(MediaType.APPLICATION_JSON_VALUE));
         MvcResult mvcResult = perform.andExpect(status().isOk()).andReturn();
         String content = mvcResult.getResponse().getContentAsString();
-        List<OfferGetResponseDto> offerGetResponseDtoList = objectMapper.readValue(
-                content,
-                new TypeReference<>() {
-                });
+        List<OfferGetResponseDto> offerGetResponseDtoList = objectMapper.readValue(content, new TypeReference<>() {
+        });
         //then
         assertThat(offerGetResponseDtoList).isEmpty();
 

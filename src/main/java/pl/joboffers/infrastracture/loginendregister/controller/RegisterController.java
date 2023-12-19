@@ -21,17 +21,17 @@ public class RegisterController {
 
     @PostMapping("/register")
     public ResponseEntity<ResultRegistrationDto> register(@RequestBody ResponseRegistrationDto responseRegistrationDto) {
-        String encoded = bCryptPasswordEncoder.encode(responseRegistrationDto.password());
+        String encodedPassword = bCryptPasswordEncoder.encode(responseRegistrationDto.password());
         UserDto registeredUser = loginAndRegisterFacade.registerUser(
                 responseRegistrationDto.email(),
-                responseRegistrationDto.password());
+                encodedPassword);
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 ResultRegistrationDto
                         .builder()
                         .token(registeredUser.token())
                         .isLogged(registeredUser.isLogged())
                         .email(registeredUser.email())
-                        .password(encoded)
+                        .password(encodedPassword)
                         .build());
     }
 }
