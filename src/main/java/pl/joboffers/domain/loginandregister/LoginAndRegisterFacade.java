@@ -1,9 +1,12 @@
 package pl.joboffers.domain.loginandregister;
 
 import lombok.AllArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.stereotype.Component;
 import pl.joboffers.domain.loginandregister.dto.UserDto;
 
 @AllArgsConstructor
+@Component
 public class LoginAndRegisterFacade {
 
     private final LoginAndRegisterFacadeRepository repository;
@@ -14,7 +17,8 @@ public class LoginAndRegisterFacade {
         if (savedInRepository) {
             return loginUser(email);
         } else {
-            User user = User.builder()
+            User user = User
+                    .builder()
                     .token(TokenGenerator.generateToken())
                     .email(email)
                     .isLogged(false)
@@ -31,9 +35,18 @@ public class LoginAndRegisterFacade {
     }
 
     public UserDto loginUser(String email) {
-        User user = repository.findByEmail(email)
-                .orElseThrow(() -> new NoUserFoundInRepositoryException(email));
+        User user = repository
+                .findByEmail(email)
+                .orElseThrow(() -> new BadCredentialsException("No user with email: " + email));
         user.loggIn();
+        return MapperLoginAndRegister.mapToUserDto(user);
+    }
+
+    public UserDto findByEmail(String email) {
+        User user = repository
+                .findByEmail(email)
+                .orElseThrow(() -> new BadCredentialsException(
+                        "No user with email: " + email));
         return MapperLoginAndRegister.mapToUserDto(user);
     }
 }

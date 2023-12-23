@@ -1,12 +1,12 @@
 package pl.joboffers.domain.loginandregister;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+@Repository
 public interface LoginAndRegisterFacadeRepository extends MongoRepository<User, String> {
 
-    User save(User user);
-
-    Optional<User> findByEmail(String emailToSearchInDatabase);
+    Optional<User> findByEmail(String email);
 }

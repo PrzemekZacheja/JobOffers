@@ -1,6 +1,7 @@
 package pl.joboffers.domain.loginandregister;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.security.authentication.BadCredentialsException;
 import pl.joboffers.domain.loginandregister.dto.UserDto;
 
 import java.util.Optional;
@@ -55,6 +56,6 @@ class LoginAndRegisterFacadeTest {
         String email = "example@gov.pl";
         //when
         //then
-        assertThatThrownBy(() -> loginAndRegisterFacade.loginUser(email)).isInstanceOf(NoUserFoundInRepositoryException.class);
+        assertThatThrownBy(() -> loginAndRegisterFacade.loginUser(email)).isInstanceOf(BadCredentialsException.class);
     }
 }

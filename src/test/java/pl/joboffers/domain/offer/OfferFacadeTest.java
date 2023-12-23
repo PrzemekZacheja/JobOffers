@@ -111,6 +111,6 @@ class OfferFacadeTest {
         }
         //then
         assertThat(repositoryForTest.findAll()
-                .size()).isEqualTo(1);
+                                    .size()).isEqualTo(1);
     }
 }
