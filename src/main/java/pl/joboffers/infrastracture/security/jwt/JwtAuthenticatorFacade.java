@@ -18,6 +18,7 @@ public class JwtAuthenticatorFacade {
 
     private final AuthenticationManager authenticationManager;
     private final Clock clock;
+    private final JwtConfigurationProperties jwtConfigurationProperties;
 
     public TokenResponseDto authenticate(TokenRequestDto tokenRequestDto) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
@@ -31,11 +32,11 @@ public class JwtAuthenticatorFacade {
 
 
     private String generateToken(User principalUser) {
-        String secretKey = "secretKey";
+        String secretKey = jwtConfigurationProperties.secret();
         Algorithm algorithm = Algorithm.HMAC256(secretKey);
         Instant now = LocalDateTime.now(clock).toInstant(ZoneOffset.UTC);
-        Instant expiresAt = now.plus(Duration.ofDays(30));
-        String issuer = "joboffers.pl";
+        Instant expiresAt = now.plus(Duration.ofDays(jwtConfigurationProperties.expirationDays()));
+        String issuer = jwtConfigurationProperties.issuer();
         return com.auth0.jwt.JWT
                 .create()
                 .withSubject(principalUser.getUsername())
