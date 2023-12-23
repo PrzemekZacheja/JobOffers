@@ -3,6 +3,7 @@ package pl.joboffers.apivalidationerror;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MvcResult;
@@ -29,14 +30,15 @@ public class ApiValidationFailedIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    @WithMockUser
     public void should_return_400_and_validation_error_message_when_request_is_empty() throws Exception {
         //given
         String urlTemplate = "/offers";
         //when
         ResultActions performPostOffer = mockMvc.perform(post(urlTemplate).content("""
-                                                                                             {
-                                                                                              }
-                                                                                           """.trim())
+                                                                                     {
+                                                                                      }
+                                                                                   """.trim())
                                                                           .contentType(MediaType.APPLICATION_JSON));
         //then
         MvcResult mvcResult = performPostOffer.andExpect(status().isBadRequest())
@@ -57,18 +59,19 @@ public class ApiValidationFailedIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    @WithMockUser
     public void should_return_400_and_validation_error_message_when_request_has_empty_fields() throws Exception {
         //given
         String urlTemplate = "/offers";
         //when
         ResultActions performPostOffer = mockMvc.perform(post(urlTemplate).content("""
-                                                                                             {
-                                                                                                 "company": "",
-                                                                                                 "offerUrl": "",
-                                                                                                 "salary": "",
-                                                                                                 "title": ""
-                                                                                               }
-                                                                                           """.trim())
+                                                                                     {
+                                                                                         "company": "",
+                                                                                         "offerUrl": "",
+                                                                                         "salary": "",
+                                                                                         "title": ""
+                                                                                       }
+                                                                                   """.trim())
                                                                           .contentType(MediaType.APPLICATION_JSON));
         //then
         String contentAsString = performPostOffer.andExpect(status().isBadRequest())

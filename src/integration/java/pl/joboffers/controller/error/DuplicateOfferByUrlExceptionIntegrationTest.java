@@ -2,6 +2,7 @@ package pl.joboffers.controller.error;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.ResultActions;
@@ -28,17 +29,18 @@ public class DuplicateOfferByUrlExceptionIntegrationTest extends BaseIntegration
     String urlTemplate = "/offers";
 
     @Test
+    @WithMockUser
     public void should_return_409_conflict_when_post_two_identical_offers() throws Exception {
         //step 1:
         //given && when
         ResultActions performFirstPostOffer = mockMvc.perform(post(urlTemplate).content("""
-                                                                                                  {
-                                                                                                     "title": "string Title",
-                                                                                                     "company": "string Company",
-                                                                                                     "salary": "string Salary",
-                                                                                                     "offerUrl": "string OfferURL"
-                                                                                                   }
-                                                                                                """.trim())
+                                                                                          {
+                                                                                             "title": "string Title",
+                                                                                             "company": "string Company",
+                                                                                             "salary": "string Salary",
+                                                                                             "offerUrl": "string OfferURL"
+                                                                                           }
+                                                                                        """.trim())
                                                                                .contentType(
                                                                                        MediaType.APPLICATION_JSON_VALUE + ";" + "charset=UTF-8"));
         //then
@@ -48,13 +50,13 @@ public class DuplicateOfferByUrlExceptionIntegrationTest extends BaseIntegration
         //step 2:
         //given && when
         ResultActions performSecondPostOffer = mockMvc.perform(post(urlTemplate).content("""
-                                                                                                   {
-                                                                                                      "title": "string Title",
-                                                                                                      "company": "string Company",
-                                                                                                      "salary": "string Salary",
-                                                                                                      "offerUrl": "string OfferURL"
-                                                                                                    }
-                                                                                                 """.trim())
+                                                                                           {
+                                                                                              "title": "string Title",
+                                                                                              "company": "string Company",
+                                                                                              "salary": "string Salary",
+                                                                                              "offerUrl": "string OfferURL"
+                                                                                            }
+                                                                                         """.trim())
                                                                                 .contentType(
                                                                                         MediaType.APPLICATION_JSON_VALUE + ";" + "charset=UTF-8"));
         //then
