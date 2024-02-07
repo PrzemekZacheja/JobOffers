@@ -2,6 +2,7 @@ package pl.joboffers.domain.offer;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DuplicateKeyException;
 import pl.joboffers.domain.offer.dto.OfferGetResponseDto;
 import pl.joboffers.domain.offer.dto.OfferPostRequestDto;
@@ -17,6 +18,7 @@ public class OfferFacade {
     private final OfferResponseClient client;
     private final OfferFacadeRepository repository;
 
+    @Cacheable(cacheNames = "jobOffers")
     public List<OfferGetResponseDto> getAllOffers() {
         return repository.findAll()
                          .stream()
@@ -30,6 +32,7 @@ public class OfferFacade {
                                                     .map(MapperOfferResponse::mapToOffer)
                                                     .toList();
         List<Offer> filteredUniqueOffers = filterUniqueOffers(offerList);
+        log.info("unique offers fetched from foreign api, saved offers: " + filteredUniqueOffers.size() + " to db");
         repository.saveAll(filteredUniqueOffers);
         return filteredUniqueOffers;
     }
@@ -56,7 +59,8 @@ public class OfferFacade {
             Offer offerSaved = repository.save(offer);
             log.info("offer by url " + offer.offerUrl() + " saved to db");
             return MapperOfferResponse.mapToOfferPostResponseDto(offerSaved);
-        } else {
+        }
+        else {
             String message = "offer by url " + offer.offerUrl() + " already exist in db";
             throw new DuplicateKeyException(message);
         }

@@ -56,7 +56,8 @@ class JobOffersFetchedSuccessful extends BaseIntegrationTest implements SampleJo
         //then
         assertThat(savedOffers).isEmpty();
 
-//    step 3: user tried to get JwtAuthenticatorFacade tokenInStepSix by requesting POST /tokenInStepSix with email=someUser, password=somePassword and system returned UNAUTHORIZED(401)
+//    step 3: user tried to get JwtAuthenticatorFacade tokenInStepSix by requesting POST /tokenInStepSix with email=someUser,
+//    password=somePassword and system returned UNAUTHORIZED(401)
         //given & when
         ResultActions failedLoginRequest = mockMvc.perform(post("/token").content("""
                                                                                   {

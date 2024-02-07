@@ -4,3 +4,12 @@ joboffers:
 
 scheduling:
   enabled: false
+
+spring:
+  cache:
+    type: none
+    redis:
+      time-to-live: PT1S
+
+  redis:
+    ssl: true

@@ -2,6 +2,8 @@ package pl.joboffers.domain.offer.dto;
 
 import lombok.Builder;
 
+import java.io.Serializable;
+
 @Builder
 public record OfferGetResponseDto(
         String id,
@@ -9,6 +11,6 @@ public record OfferGetResponseDto(
         String company,
         String salary,
         String offerUrl
-) {
+) implements Serializable {
 
 }
